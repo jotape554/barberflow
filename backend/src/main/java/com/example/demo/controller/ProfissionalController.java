@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CriarAcessoRequest;
 import com.example.demo.model.Profissional;
 import com.example.demo.service.ProfissionalService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +42,14 @@ public class ProfissionalController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         profissionalService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /** Cria o login do profissional, restrito à própria agenda/comissão no painel. */
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','GERENTE')")
+    @PostMapping("/{id}/acesso")
+    public ResponseEntity<Void> criarAcesso(@PathVariable Long id, @Valid @RequestBody CriarAcessoRequest req) {
+        profissionalService.criarAcesso(id, req.getEmail(), req.getSenha());
         return ResponseEntity.noContent().build();
     }
 }

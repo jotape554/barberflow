@@ -1,0 +1,207 @@
+package com.example.demo.integration;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+/**
+ * Um profissional nunca pode enxergar (ou mexer n)a agenda e na comissão de outro profissional
+ * da mesma barbearia — só na própria. O administrador continua vendo tudo normalmente.
+ */
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockMvc
+class ProfissionalRestricaoIntegrationTest {
+
+    @Autowired private MockMvc mockMvc;
+    @Autowired private ObjectMapper objectMapper;
+
+    private String registrarBarbeariaEObterToken(String email) throws Exception {
+        MvcResult resultado = mockMvc.perform(post("/auth/registro")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"nomeBarbearia":"Barbearia Teste","nomeAdmin":"Admin","email":"%s","senha":"123456"}
+                                """.formatted(email)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readTree(resultado.getResponse().getContentAsString()).get("token").asText();
+    }
+
+    private Long criarServico(String token) throws Exception {
+        MvcResult resultado = mockMvc.perform(post("/api/servicos")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Corte\",\"descricao\":\"Corte simples\",\"preco\":50.00,\"duracaoMinutos\":30,\"ativo\":true}"))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readTree(resultado.getResponse().getContentAsString()).get("id").asLong();
+    }
+
+    private Long criarProfissional(String token, String nome) throws Exception {
+        MvcResult resultado = mockMvc.perform(post("/api/profissionais")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"nome":"%s","funcao":"Barbeiro","percentualComissao":40,"ativo":true}
+                                """.formatted(nome)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readTree(resultado.getResponse().getContentAsString()).get("id").asLong();
+    }
+
+    private Long criarCliente(String token, String nome) throws Exception {
+        MvcResult resultado = mockMvc.perform(post("/api/clientes")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"%s\",\"telefone\":\"11999999999\"}".formatted(nome)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readTree(resultado.getResponse().getContentAsString()).get("id").asLong();
+    }
+
+    private Long criarAgendamento(String token, Long clienteId, Long profissionalId, Long servicoId, String hora) throws Exception {
+        LocalDate amanha = LocalDate.now().plusDays(1);
+        MvcResult resultado = mockMvc.perform(post("/api/agendamentos")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"clienteId":%d,"profissionalId":%d,"servicoId":%d,"data":"%s","horaInicio":"%s"}
+                                """.formatted(clienteId, profissionalId, servicoId, amanha, hora)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readTree(resultado.getResponse().getContentAsString()).get("id").asLong();
+    }
+
+    private String criarAcessoELogar(String tokenAdmin, Long profissionalId, String email) throws Exception {
+        mockMvc.perform(post("/api/profissionais/{id}/acesso", profissionalId)
+                        .header("Authorization", "Bearer " + tokenAdmin)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"%s\",\"senha\":\"123456\"}".formatted(email)))
+                .andExpect(status().isNoContent());
+
+        MvcResult login = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"%s\",\"senha\":\"123456\"}".formatted(email)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.papel").value("PROFISSIONAL"))
+                .andReturn();
+        return objectMapper.readTree(login.getResponse().getContentAsString()).get("token").asText();
+    }
+
+    @Test
+    void profissionalSoVeAPropriaAgendaNaoADeOutroProfissional() throws Exception {
+        String tokenAdmin = registrarBarbeariaEObterToken("dono-agenda@teste.com");
+        Long servicoId = criarServico(tokenAdmin);
+        Long carlosId = criarProfissional(tokenAdmin, "Carlos");
+        Long brunoId = criarProfissional(tokenAdmin, "Bruno");
+        Long clienteId = criarCliente(tokenAdmin, "Maria");
+
+        Long agendamentoCarlos = criarAgendamento(tokenAdmin, clienteId, carlosId, servicoId, "10:00");
+        Long agendamentoBruno = criarAgendamento(tokenAdmin, clienteId, brunoId, servicoId, "14:00");
+
+        String tokenCarlos = criarAcessoELogar(tokenAdmin, carlosId, "carlos@teste.com");
+
+        MvcResult listaCarlos = mockMvc.perform(get("/api/agendamentos")
+                        .header("Authorization", "Bearer " + tokenCarlos))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode agendamentosDeCarlos = objectMapper.readTree(listaCarlos.getResponse().getContentAsString());
+        assertThat(agendamentosDeCarlos).hasSize(1);
+        assertThat(agendamentosDeCarlos.get(0).get("id").asLong()).isEqualTo(agendamentoCarlos);
+
+        // não consegue nem buscar o agendamento do Bruno diretamente pelo id
+        mockMvc.perform(get("/api/agendamentos/{id}", agendamentoBruno)
+                        .header("Authorization", "Bearer " + tokenCarlos))
+                .andExpect(status().isNotFound());
+
+        // admin continua vendo os dois
+        MvcResult listaAdmin = mockMvc.perform(get("/api/agendamentos")
+                        .header("Authorization", "Bearer " + tokenAdmin))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertThat(objectMapper.readTree(listaAdmin.getResponse().getContentAsString())).hasSize(2);
+    }
+
+    @Test
+    void profissionalNaoConsegueCriarAgendamentoEmNomeDeOutroProfissional() throws Exception {
+        String tokenAdmin = registrarBarbeariaEObterToken("dono-criar@teste.com");
+        Long servicoId = criarServico(tokenAdmin);
+        Long carlosId = criarProfissional(tokenAdmin, "Carlos");
+        Long brunoId = criarProfissional(tokenAdmin, "Bruno");
+        Long clienteId = criarCliente(tokenAdmin, "Maria");
+
+        String tokenCarlos = criarAcessoELogar(tokenAdmin, carlosId, "carlos2@teste.com");
+
+        LocalDate amanha = LocalDate.now().plusDays(1);
+        mockMvc.perform(post("/api/agendamentos")
+                        .header("Authorization", "Bearer " + tokenCarlos)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"clienteId":%d,"profissionalId":%d,"servicoId":%d,"data":"%s","horaInicio":"09:00"}
+                                """.formatted(clienteId, brunoId, servicoId, amanha)))
+                .andExpect(status().isOk())
+                // mesmo pedindo o id do Bruno, o agendamento nasce vinculado ao próprio Carlos
+                .andExpect(jsonPath("$.profissional.id").value(carlosId));
+    }
+
+    @Test
+    void profissionalSoVeAPropriaComissao() throws Exception {
+        String tokenAdmin = registrarBarbeariaEObterToken("dono-comissao@teste.com");
+        Long servicoId = criarServico(tokenAdmin);
+        Long carlosId = criarProfissional(tokenAdmin, "Carlos");
+        Long brunoId = criarProfissional(tokenAdmin, "Bruno");
+        Long clienteId = criarCliente(tokenAdmin, "Maria");
+
+        Long agendamentoCarlos = criarAgendamento(tokenAdmin, clienteId, carlosId, servicoId, "10:00");
+        Long agendamentoBruno = criarAgendamento(tokenAdmin, clienteId, brunoId, servicoId, "14:00");
+
+        mockMvc.perform(patch("/api/agendamentos/{id}/concluir", agendamentoCarlos)
+                        .header("Authorization", "Bearer " + tokenAdmin)
+                        .param("formaPagamento", "PIX"))
+                .andExpect(status().isOk());
+        mockMvc.perform(patch("/api/agendamentos/{id}/concluir", agendamentoBruno)
+                        .header("Authorization", "Bearer " + tokenAdmin)
+                        .param("formaPagamento", "PIX"))
+                .andExpect(status().isOk());
+
+        String tokenCarlos = criarAcessoELogar(tokenAdmin, carlosId, "carlos3@teste.com");
+
+        MvcResult comissoesCarlos = mockMvc.perform(get("/api/comissoes")
+                        .header("Authorization", "Bearer " + tokenCarlos))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode comissoes = objectMapper.readTree(comissoesCarlos.getResponse().getContentAsString());
+        assertThat(comissoes).hasSize(1);
+        assertThat(comissoes.get(0).get("profissional").get("id").asLong()).isEqualTo(carlosId);
+    }
+
+    @Test
+    void naoDeixaCriarDoisAcessosParaOMesmoProfissional() throws Exception {
+        String tokenAdmin = registrarBarbeariaEObterToken("dono-duplo@teste.com");
+        Long carlosId = criarProfissional(tokenAdmin, "Carlos");
+
+        mockMvc.perform(post("/api/profissionais/{id}/acesso", carlosId)
+                        .header("Authorization", "Bearer " + tokenAdmin)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"carlos4@teste.com\",\"senha\":\"123456\"}"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(post("/api/profissionais/{id}/acesso", carlosId)
+                        .header("Authorization", "Bearer " + tokenAdmin)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"carlos5@teste.com\",\"senha\":\"123456\"}"))
+                .andExpect(status().isBadRequest());
+    }
+}

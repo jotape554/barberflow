@@ -34,6 +34,11 @@ public class Usuario {
     @JoinColumn(name = "barbearia_id", nullable = false)
     private Barbearia barbearia;
 
+    /** Só preenchido quando papel = PROFISSIONAL — é o que restringe o que esse login enxerga. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profissional_id")
+    private Profissional profissional;
+
     @Builder.Default
     private boolean ativo = true;
 }

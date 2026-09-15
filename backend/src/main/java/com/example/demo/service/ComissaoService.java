@@ -15,7 +15,11 @@ public class ComissaoService {
 
     private final ComissaoRepository comissaoRepository;
 
+    /** Profissional só vê a própria comissão; administrador/gerente veem tudo da barbearia. */
     public List<Comissao> listar() {
+        if (SecurityUtils.isProfissional()) {
+            return listarPorProfissional(SecurityUtils.profissionalAtualId());
+        }
         return comissaoRepository.findAllByBarbeariaId(SecurityUtils.barbeariaAtualId());
     }
 

@@ -58,7 +58,7 @@ public class AuthService {
         UsuarioPrincipal principal = new UsuarioPrincipal(admin);
         String token = jwtService.gerarToken(principal);
 
-        return new AuthResponse(token, admin.getNome(), admin.getPapel().name(), barbearia.getId(), barbearia.getSlug());
+        return new AuthResponse(token, admin.getNome(), admin.getPapel().name(), barbearia.getId(), barbearia.getSlug(), null);
     }
 
     public AuthResponse login(LoginRequest req) {
@@ -71,8 +71,9 @@ public class AuthService {
         UsuarioPrincipal principal = new UsuarioPrincipal(usuario);
         String token = jwtService.gerarToken(principal);
 
+        Long profissionalId = usuario.getProfissional() != null ? usuario.getProfissional().getId() : null;
         return new AuthResponse(token, usuario.getNome(), usuario.getPapel().name(),
-                usuario.getBarbearia().getId(), usuario.getBarbearia().getSlug());
+                usuario.getBarbearia().getId(), usuario.getBarbearia().getSlug(), profissionalId);
     }
 
     private String gerarSlugUnico(String nome) {

@@ -1,13 +1,19 @@
 package com.example.demo.service;
 
+import com.example.demo.enums.Papel;
 import com.example.demo.exception.RecursoNaoEncontradoException;
+import com.example.demo.exception.RegraDeNegocioException;
 import com.example.demo.model.Barbearia;
 import com.example.demo.model.Profissional;
+import com.example.demo.model.Usuario;
 import com.example.demo.repository.BarbeariaRepository;
 import com.example.demo.repository.ProfissionalRepository;
+import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +23,8 @@ public class ProfissionalService {
 
     private final ProfissionalRepository profissionalRepository;
     private final BarbeariaRepository barbeariaRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Profissional> listar() {
         return profissionalRepository.findAllByBarbeariaId(SecurityUtils.barbeariaAtualId());
@@ -53,5 +61,32 @@ public class ProfissionalService {
 
     public void excluir(Long id) {
         profissionalRepository.delete(buscar(id));
+    }
+
+    /**
+     * Cria o login desse profissional. Ele passa a poder entrar no painel, mas
+     * enxergando só a própria agenda e comissão — nunca a barbearia inteira.
+     */
+    @Transactional
+    public void criarAcesso(Long profissionalId, String email, String senha) {
+        Profissional profissional = buscar(profissionalId);
+
+        if (usuarioRepository.existsByEmail(email)) {
+            throw new RegraDeNegocioException("Já existe um usuário com este e-mail.");
+        }
+        if (usuarioRepository.existsByProfissionalId(profissionalId)) {
+            throw new RegraDeNegocioException("Este profissional já tem um acesso ao painel.");
+        }
+
+        Usuario usuario = Usuario.builder()
+                .nome(profissional.getNome())
+                .email(email)
+                .senhaHash(passwordEncoder.encode(senha))
+                .papel(Papel.PROFISSIONAL)
+                .barbearia(profissional.getBarbearia())
+                .profissional(profissional)
+                .build();
+
+        usuarioRepository.save(usuario);
     }
 }

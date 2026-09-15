@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
       papel: resposta.papel,
       barbeariaId: resposta.barbeariaId,
       barbeariaSlug: resposta.barbeariaSlug,
+      profissionalId: resposta.profissionalId,
     };
     localStorage.setItem('barberpro_usuario', JSON.stringify(dados));
     setUsuario(dados);

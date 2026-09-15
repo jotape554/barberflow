@@ -17,6 +17,12 @@ export default function Profissionais() {
   const [form, setForm] = useState(VAZIO);
   const [erro, setErro] = useState('');
 
+  const [acessoAberto, setAcessoAberto] = useState(false);
+  const [profissionalAcesso, setProfissionalAcesso] = useState(null);
+  const [formAcesso, setFormAcesso] = useState({ email: '', senha: '' });
+  const [erroAcesso, setErroAcesso] = useState('');
+  const [sucessoAcesso, setSucessoAcesso] = useState('');
+
   function carregar() {
     setCarregando(true);
     api.get('/api/profissionais').then(setProfissionais).finally(() => setCarregando(false));
@@ -67,6 +73,25 @@ export default function Profissionais() {
     carregar();
   }
 
+  function abrirAcesso(profissional) {
+    setProfissionalAcesso(profissional);
+    setFormAcesso({ email: profissional.email || '', senha: '' });
+    setErroAcesso('');
+    setSucessoAcesso('');
+    setAcessoAberto(true);
+  }
+
+  async function criarAcesso(e) {
+    e.preventDefault();
+    setErroAcesso('');
+    try {
+      await api.post(`/api/profissionais/${profissionalAcesso.id}/acesso`, formAcesso);
+      setSucessoAcesso('Acesso criado! Já pode passar o e-mail e a senha pro profissional.');
+    } catch (err) {
+      setErroAcesso(err.message);
+    }
+  }
+
   return (
     <div>
       <div className="page-header">
@@ -95,6 +120,7 @@ export default function Profissionais() {
                   <td>{Number(p.percentualComissao || 0)}%</td>
                   <td><span className={`badge ${p.ativo ? 'badge-confirmado' : 'badge-cancelado'}`}>{p.ativo ? 'Ativo' : 'Inativo'}</span></td>
                   <td style={{ textAlign: 'right' }}>
+                    <button className="btn btn-secundario" onClick={() => abrirAcesso(p)} style={{ marginRight: 8 }}>Acesso ao painel</button>
                     <button className="btn btn-secundario" onClick={() => abrirEdicao(p)} style={{ marginRight: 8 }}>Editar</button>
                     <button className="btn btn-perigo" onClick={() => excluir(p)}>Excluir</button>
                   </td>
@@ -158,6 +184,46 @@ export default function Profissionais() {
               <button className="btn btn-latao">Salvar</button>
             </div>
           </form>
+        </Modal>
+      )}
+
+      {acessoAberto && (
+        <Modal titulo={`Acesso ao painel — ${profissionalAcesso?.nome}`} onFechar={() => setAcessoAberto(false)}>
+          {erroAcesso && <div className="erro">{erroAcesso}</div>}
+          {sucessoAcesso ? (
+            <div className="sucesso">{sucessoAcesso}</div>
+          ) : (
+            <>
+              <p style={{ marginTop: 0, color: 'var(--texto-suave)' }}>
+                Com esse login, {profissionalAcesso?.nome} vai poder entrar no painel e ver
+                só a própria agenda e comissão — nunca os dados da barbearia toda.
+              </p>
+              <form onSubmit={criarAcesso}>
+                <div className="campo">
+                  <label>E-mail de login</label>
+                  <input
+                    type="email"
+                    value={formAcesso.email}
+                    onChange={(e) => setFormAcesso({ ...formAcesso, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="campo">
+                  <label>Senha</label>
+                  <input
+                    type="password"
+                    value={formAcesso.senha}
+                    onChange={(e) => setFormAcesso({ ...formAcesso, senha: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="modal-acoes">
+                  <button type="button" className="btn btn-secundario" onClick={() => setAcessoAberto(false)}>Cancelar</button>
+                  <button className="btn btn-latao">Criar acesso</button>
+                </div>
+              </form>
+            </>
+          )}
         </Modal>
       )}
     </div>

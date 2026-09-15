@@ -22,6 +22,7 @@ public class UsuarioPrincipal implements UserDetails {
     private final String senhaHash;
     private final String papel;
     private final Long barbeariaId;
+    private final Long profissionalId;
 
     public UsuarioPrincipal(Usuario usuario) {
         this.id = usuario.getId();
@@ -29,6 +30,7 @@ public class UsuarioPrincipal implements UserDetails {
         this.senhaHash = usuario.getSenhaHash();
         this.papel = usuario.getPapel().name();
         this.barbeariaId = usuario.getBarbearia().getId();
+        this.profissionalId = usuario.getProfissional() != null ? usuario.getProfissional().getId() : null;
     }
 
     @Override

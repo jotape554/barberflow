@@ -22,6 +22,12 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     @Query(FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.data = :data")
     List<Agendamento> findAllByBarbeariaIdAndData(Long barbeariaId, LocalDate data);
 
+    @Query(FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.profissional.id = :profissionalId")
+    List<Agendamento> findAllByBarbeariaIdAndProfissionalId(Long barbeariaId, Long profissionalId);
+
+    @Query(FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.profissional.id = :profissionalId and a.data = :data")
+    List<Agendamento> findAllByBarbeariaIdAndProfissionalIdAndData(Long barbeariaId, Long profissionalId, LocalDate data);
+
     /** usado para checar conflito de horário do mesmo profissional no mesmo dia */
     List<Agendamento> findAllByProfissionalIdAndDataAndBarbeariaId(
             Long profissionalId, LocalDate data, Long barbeariaId);

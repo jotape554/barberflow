@@ -11,4 +11,5 @@ public class AuthResponse {
     private String papel;
     private Long barbeariaId;
     private String barbeariaSlug;
+    private Long profissionalId;
 }

@@ -32,23 +32,39 @@ public class AgendamentoService {
     private final ComissaoRepository comissaoRepository;
 
     public List<Agendamento> listar() {
-        return agendamentoRepository.findAllByBarbeariaId(SecurityUtils.barbeariaAtualId());
+        Long barbeariaId = SecurityUtils.barbeariaAtualId();
+        if (SecurityUtils.isProfissional()) {
+            return agendamentoRepository.findAllByBarbeariaIdAndProfissionalId(barbeariaId, SecurityUtils.profissionalAtualId());
+        }
+        return agendamentoRepository.findAllByBarbeariaId(barbeariaId);
     }
 
     public List<Agendamento> listarPorData(LocalDate data) {
-        return agendamentoRepository.findAllByBarbeariaIdAndData(SecurityUtils.barbeariaAtualId(), data);
+        Long barbeariaId = SecurityUtils.barbeariaAtualId();
+        if (SecurityUtils.isProfissional()) {
+            return agendamentoRepository.findAllByBarbeariaIdAndProfissionalIdAndData(
+                    barbeariaId, SecurityUtils.profissionalAtualId(), data);
+        }
+        return agendamentoRepository.findAllByBarbeariaIdAndData(barbeariaId, data);
     }
 
+    /** Nunca deixa um profissional enxergar (ou agir sobre) o agendamento de outro profissional. */
     public Agendamento buscar(Long id) {
-        return agendamentoRepository.findByIdAndBarbeariaId(id, SecurityUtils.barbeariaAtualId())
+        Agendamento agendamento = agendamentoRepository.findByIdAndBarbeariaId(id, SecurityUtils.barbeariaAtualId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Agendamento não encontrado"));
+
+        if (SecurityUtils.isProfissional() && !agendamento.getProfissional().getId().equals(SecurityUtils.profissionalAtualId())) {
+            throw new RecursoNaoEncontradoException("Agendamento não encontrado");
+        }
+        return agendamento;
     }
 
-    /** Usado pelas rotas autenticadas do painel (barbearia vem do JWT). */
+    /** Usado pelas rotas autenticadas do painel (barbearia vem do JWT). Profissional só cria pra si mesmo. */
     @Transactional
     public Agendamento criar(Long clienteId, Long profissionalId, Long servicoId,
                               LocalDate data, LocalTime horaInicio, String observacao) {
-        return criarComBarbeariaId(SecurityUtils.barbeariaAtualId(), clienteId, profissionalId, servicoId,
+        Long profissionalFinal = SecurityUtils.isProfissional() ? SecurityUtils.profissionalAtualId() : profissionalId;
+        return criarComBarbeariaId(SecurityUtils.barbeariaAtualId(), clienteId, profissionalFinal, servicoId,
                 data, horaInicio, observacao);
     }
 

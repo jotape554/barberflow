@@ -14,4 +14,13 @@ public class SecurityUtils {
     public static Long barbeariaAtualId() {
         return usuarioAtual().getBarbeariaId();
     }
+
+    /** Null quando o usuário atual não é um profissional (ex.: administrador). */
+    public static Long profissionalAtualId() {
+        return usuarioAtual().getProfissionalId();
+    }
+
+    public static boolean isProfissional() {
+        return "PROFISSIONAL".equals(usuarioAtual().getPapel());
+    }
 }
