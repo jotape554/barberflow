@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../api/http';
 
 function formatarMoeda(valor) {
@@ -13,12 +14,14 @@ const STATUS_LABEL = {
 };
 
 export default function Assinatura() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [status, setStatus] = useState(null);
   const [planos, setPlanos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
-  const [escolhendo, setEscolhendo] = useState(null);
-  const [mensagemPlano, setMensagemPlano] = useState('');
+  const [processando, setProcessando] = useState(null);
+
+  const checkoutParam = searchParams.get('checkout');
 
   function carregar() {
     setCarregando(true);
@@ -33,19 +36,35 @@ export default function Assinatura() {
 
   useEffect(carregar, []);
 
-  async function escolherPlano(plano) {
-    setEscolhendo(plano);
-    setMensagemPlano('');
+  useEffect(() => {
+    if (checkoutParam === 'sucesso') {
+      // A ativação chega pelo webhook da Stripe, que pode levar alguns segundos.
+      const t = setTimeout(carregar, 2000);
+      return () => clearTimeout(t);
+    }
+  }, [checkoutParam]);
+
+  async function assinar(plano) {
+    setProcessando(plano);
+    setErro('');
     try {
-      const atualizado = await api.patch(`/api/assinatura/plano?plano=${plano}`);
-      setStatus(atualizado);
-      setMensagemPlano(
-        'Plano registrado! A cobrança automática ainda não está disponível — fale com o suporte para ativar seu acesso enquanto isso.'
-      );
+      const { url } = await api.post(`/api/assinatura/checkout?plano=${plano}`);
+      window.location.href = url;
     } catch (e) {
       setErro(e.message);
-    } finally {
-      setEscolhendo(null);
+      setProcessando(null);
+    }
+  }
+
+  async function abrirPortal() {
+    setProcessando('portal');
+    setErro('');
+    try {
+      const { url } = await api.post('/api/assinatura/portal');
+      window.location.href = url;
+    } catch (e) {
+      setErro(e.message);
+      setProcessando(null);
     }
   }
 
@@ -65,9 +84,25 @@ export default function Assinatura() {
           <h2>Assinatura</h2>
           <p>Seu plano no BarberPro.</p>
         </div>
+        {status?.status === 'ATIVA' && (
+          <button className="btn btn-secundario" disabled={processando === 'portal'} onClick={abrirPortal}>
+            {processando === 'portal' ? 'Abrindo...' : 'Gerenciar cobrança'}
+          </button>
+        )}
       </div>
 
       {erro && <div className="erro">{erro}</div>}
+
+      {checkoutParam === 'sucesso' && (
+        <div className="panel" style={{ padding: '14px 20px', marginBottom: 20, borderColor: 'var(--verde-navalha)', background: '#EAF3EC' }}>
+          Pagamento confirmado! Sua assinatura está sendo ativada — isso leva só alguns segundos.
+        </div>
+      )}
+      {checkoutParam === 'cancelado' && (
+        <div className="panel" style={{ padding: '14px 20px', marginBottom: 20 }}>
+          Checkout cancelado. Nenhuma cobrança foi feita.
+        </div>
+      )}
 
       {status && (
         <div className="panel" style={{ padding: 24, marginBottom: 28 }}>
@@ -96,37 +131,34 @@ export default function Assinatura() {
 
           {!status.acessoLiberado && (
             <div className="erro" style={{ marginTop: 18, marginBottom: 0 }}>
-              Seu período de teste terminou e o acesso ao painel está bloqueado. Escolha um plano abaixo para continuar.
+              Seu período de teste terminou e o acesso ao painel está bloqueado. Assine um plano abaixo para continuar.
             </div>
           )}
         </div>
       )}
 
-      {mensagemPlano && (
-        <div className="panel" style={{ padding: '14px 20px', marginBottom: 20, borderColor: 'var(--latao)', background: 'var(--latao-suave)' }}>
-          {mensagemPlano}
-        </div>
-      )}
-
       <div className="form-grid">
-        {planos.map((p) => (
-          <div key={p.plano} className="metric-card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div>
-              <div className="rotulo">{p.plano}</div>
-              <div className="valor" style={{ fontSize: '1.6rem' }}>
-                {formatarMoeda(p.precoMensal)}<span style={{ fontFamily: 'var(--fonte-corpo)', fontSize: '0.85rem', color: 'var(--texto-suave)' }}>/mês</span>
+        {planos.map((p) => {
+          const ehPlanoAtivo = status?.plano === p.plano && status?.status === 'ATIVA';
+          return (
+            <div key={p.plano} className="metric-card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <div className="rotulo">{p.plano}</div>
+                <div className="valor" style={{ fontSize: '1.6rem' }}>
+                  {formatarMoeda(p.precoMensal)}<span style={{ fontFamily: 'var(--fonte-corpo)', fontSize: '0.85rem', color: 'var(--texto-suave)' }}>/mês</span>
+                </div>
               </div>
+              <p style={{ color: 'var(--texto-suave)', fontSize: '0.9rem', margin: 0, flex: 1 }}>{p.descricao}</p>
+              <button
+                className={ehPlanoAtivo ? 'btn btn-secundario' : 'btn btn-latao'}
+                disabled={ehPlanoAtivo || processando === p.plano}
+                onClick={() => assinar(p.plano)}
+              >
+                {ehPlanoAtivo ? 'Plano atual' : processando === p.plano ? 'Redirecionando...' : 'Assinar este plano'}
+              </button>
             </div>
-            <p style={{ color: 'var(--texto-suave)', fontSize: '0.9rem', margin: 0, flex: 1 }}>{p.descricao}</p>
-            <button
-              className={status?.plano === p.plano ? 'btn btn-secundario' : 'btn btn-latao'}
-              disabled={status?.plano === p.plano || escolhendo === p.plano}
-              onClick={() => escolherPlano(p.plano)}
-            >
-              {status?.plano === p.plano ? 'Plano atual' : escolhendo === p.plano ? 'Escolhendo...' : 'Escolher este plano'}
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

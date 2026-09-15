@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface BarbeariaRepository extends JpaRepository<Barbearia, Long> {
     Optional<Barbearia> findBySlug(String slug);
     boolean existsBySlug(String slug);
+    Optional<Barbearia> findByStripeCustomerId(String stripeCustomerId);
+    Optional<Barbearia> findByStripeSubscriptionId(String stripeSubscriptionId);
 }

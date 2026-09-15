@@ -52,8 +52,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    // site institucional, login/cadastro e página pública de agendamento não exigem token
-                    .requestMatchers("/auth/**", "/public/**").permitAll()
+                    // site institucional, login/cadastro, página pública de agendamento e o
+                    // webhook da Stripe (autenticado pela assinatura, não por token) não exigem JWT
+                    .requestMatchers("/auth/**", "/public/**", "/webhooks/**").permitAll()
                     .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

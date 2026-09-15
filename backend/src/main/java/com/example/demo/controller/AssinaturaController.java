@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.AssinaturaResponse;
+import com.example.demo.dto.CheckoutResponse;
 import com.example.demo.dto.PlanoDisponivelResponse;
 import com.example.demo.enums.PlanoSaas;
 import com.example.demo.security.SecurityUtils;
@@ -28,14 +29,19 @@ public class AssinaturaController {
         return assinaturaService.status(SecurityUtils.barbeariaAtualId());
     }
 
-    /**
-     * Registra o plano desejado pela barbearia. Isso NÃO libera acesso sozinho — nenhum
-     * gateway de pagamento está integrado ainda, então o status só muda para ATIVA quando
-     * uma cobrança de verdade for confirmada (ver AssinaturaService.confirmarPagamento).
-     */
-    @PatchMapping("/plano")
+    /** Cria a sessão de checkout na Stripe e devolve a URL para onde o navegador deve ser redirecionado. */
+    @PostMapping("/checkout")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public AssinaturaResponse escolherPlano(@RequestParam PlanoSaas plano) {
-        return assinaturaService.escolherPlano(SecurityUtils.barbeariaAtualId(), plano);
+    public CheckoutResponse checkout(@RequestParam PlanoSaas plano) {
+        String url = assinaturaService.criarSessaoCheckout(SecurityUtils.barbeariaAtualId(), plano);
+        return new CheckoutResponse(url);
+    }
+
+    /** URL do portal da Stripe para a barbearia gerenciar forma de pagamento ou cancelar. */
+    @PostMapping("/portal")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public CheckoutResponse portal() {
+        String url = assinaturaService.criarSessaoPortal(SecurityUtils.barbeariaAtualId());
+        return new CheckoutResponse(url);
     }
 }

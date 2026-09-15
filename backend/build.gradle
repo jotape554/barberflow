@@ -33,6 +33,8 @@ dependencies {
     // o proxy do Hibernate (evita InvalidDefinitionException em ByteBuddyInterceptor).
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
 
+    implementation 'com.stripe:stripe-java:33.4.2'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }

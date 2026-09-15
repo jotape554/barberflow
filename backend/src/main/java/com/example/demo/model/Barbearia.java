@@ -46,6 +46,10 @@ public class Barbearia {
     /** Fim do período de teste gratuito. Após essa data, sem status ATIVA, o acesso ao painel é bloqueado. */
     private LocalDate dataFimTrial;
 
+    /** Preenchidos após o primeiro checkout na Stripe — usados para reconciliar os eventos do webhook. */
+    private String stripeCustomerId;
+    private String stripeSubscriptionId;
+
     @Builder.Default
     private LocalDateTime criadoEm = LocalDateTime.now();
 }

@@ -11,8 +11,8 @@ import java.math.BigDecimal;
  */
 @Getter
 public enum PlanoSaas {
-    BASICO(new BigDecimal("59.90"), "1 profissional, agenda e financeiro básico"),
-    PROFISSIONAL(new BigDecimal("119.90"), "Até 5 profissionais, agendamento público e comissões"),
+    BASICO(new BigDecimal("69.90"), "1 profissional, agenda e financeiro básico"),
+    PROFISSIONAL(new BigDecimal("129.90"), "Até 5 profissionais, agendamento público e comissões"),
     PREMIUM(new BigDecimal("199.90"), "Profissionais ilimitados e suporte prioritário");
 
     private final BigDecimal precoMensal;
