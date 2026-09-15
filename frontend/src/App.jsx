@@ -15,6 +15,7 @@ import Agenda from './pages/Agenda';
 import Financeiro from './pages/Financeiro';
 import Assinatura from './pages/Assinatura';
 import AgendamentoPublico from './pages/public/AgendamentoPublico';
+import Institucional from './pages/Institucional';
 
 function TrialBanner({ status }) {
   if (!status || status.status !== 'TRIAL' || status.diasRestantesTrial == null) return null;
@@ -79,7 +80,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/painel" replace />} />
+          <Route path="/" element={<Institucional />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/b/:slug" element={<AgendamentoPublico />} />
