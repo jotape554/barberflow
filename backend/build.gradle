@@ -48,3 +48,10 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// O plugin do Spring Boot gera dois jars em build/libs: o "plain" (sem manifesto
+// executável) e o de verdade. Desabilitar o plain evita que scripts de deploy que usam
+// um curinga (build/libs/*.jar) peguem o arquivo errado por ordem alfabética.
+tasks.named('jar') {
+    enabled = false
+}
