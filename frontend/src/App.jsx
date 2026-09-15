@@ -11,6 +11,7 @@ import Servicos from './pages/Servicos';
 import Profissionais from './pages/Profissionais';
 import Agenda from './pages/Agenda';
 import Financeiro from './pages/Financeiro';
+import AgendamentoPublico from './pages/public/AgendamentoPublico';
 
 function PainelLayout() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/painel" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
+          <Route path="/b/:slug" element={<AgendamentoPublico />} />
 
           <Route
             path="/painel"
