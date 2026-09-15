@@ -22,8 +22,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     runtimeOnly 'org.postgresql:postgresql'
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    // Versão fixada (em vez de deixar o BOM do Spring Boot escolher): versões antigas do
+    // Lombok quebram em JDKs recentes com ExceptionInInitializerError/NoSuchFieldException
+    // ao tentar acessar internos do javac que mudaram de uma versão do JDK para outra.
+    compileOnly 'org.projectlombok:lombok:1.18.48'
+    annotationProcessor 'org.projectlombok:lombok:1.18.48'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
