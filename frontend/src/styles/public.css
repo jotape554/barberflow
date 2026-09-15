@@ -1,0 +1,131 @@
+.pub-shell {
+  min-height: 100vh;
+  background: var(--papel);
+}
+
+.pub-header {
+  background: var(--tinta);
+  color: var(--papel);
+  padding: 56px 24px 76px;
+  text-align: center;
+}
+
+.pub-header h1 {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  color: var(--papel);
+  margin-bottom: 6px;
+}
+
+.pub-header .latao { color: var(--latao); }
+
+.pub-header p {
+  color: rgba(239,235,226,0.72);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.pub-content {
+  max-width: 640px;
+  margin: -48px auto 60px;
+  padding: 0 20px;
+}
+
+.pub-card {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--sombra-lg);
+  padding: 32px;
+}
+
+.pub-passos {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.pub-passo {
+  flex: 1;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--borda);
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: border-color var(--transicao), color var(--transicao);
+}
+
+.pub-passo.ativo {
+  border-color: var(--latao);
+  color: var(--texto);
+  font-weight: 700;
+}
+
+.pub-passo.feito {
+  border-color: var(--verde-navalha);
+}
+
+.opcao-lista {
+  display: grid;
+  gap: 10px;
+}
+
+.opcao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 18px;
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--radius);
+  background: var(--branco);
+  text-align: left;
+  width: 100%;
+  font-family: var(--fonte-corpo);
+  font-size: 0.95rem;
+  transition: border-color var(--transicao), background var(--transicao), transform var(--transicao);
+}
+
+.opcao:hover { border-color: var(--latao); transform: translateY(-1px); }
+
+.opcao.selecionada {
+  border-color: var(--latao);
+  background: var(--latao-suave);
+}
+
+.opcao .preco { color: var(--texto-suave); font-size: 0.88rem; }
+
+.horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 8px;
+}
+
+.horario-slot {
+  padding: 10px 0;
+  text-align: center;
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--radius-sm);
+  background: var(--branco);
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: border-color var(--transicao), background var(--transicao), color var(--transicao);
+}
+
+.horario-slot:hover { border-color: var(--latao); }
+.horario-slot.selecionado { background: var(--latao); border-color: var(--latao); color: var(--tinta); font-weight: 700; }
+
+.pub-confirmacao {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.pub-confirmacao .icone {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--verde-navalha);
+  color: var(--papel);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
+  font-size: 1.5rem;
+  box-shadow: var(--sombra);
+}
