@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,9 @@ public class DisponibilidadeService {
             DayOfWeek.SUNDAY, "DOM"
     );
 
+    // Aceita tanto "8:30" quanto "08:30" — o campo é digitado livremente no cadastro do profissional.
+    private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("H:mm");
+
     public List<LocalTime> horariosDisponiveis(Long barbeariaId, Long profissionalId, Long servicoId, LocalDate data) {
 
         Profissional profissional = profissionalRepository.findByIdAndBarbeariaId(profissionalId, barbeariaId)
@@ -62,8 +66,8 @@ public class DisponibilidadeService {
             return List.of();
         }
 
-        LocalTime inicioExpediente = LocalTime.parse(profissional.getHorarioInicio());
-        LocalTime fimExpediente = LocalTime.parse(profissional.getHorarioFim());
+        LocalTime inicioExpediente = LocalTime.parse(profissional.getHorarioInicio(), FORMATO_HORA);
+        LocalTime fimExpediente = LocalTime.parse(profissional.getHorarioFim(), FORMATO_HORA);
         int duracao = servico.getDuracaoMinutos();
 
         List<Agendamento> existentes = agendamentoRepository
