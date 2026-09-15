@@ -1,0 +1,21 @@
+:root {
+  /* cores — inspiradas em navalha, latão e couro, não no kit padrão de SaaS */
+  --tinta: #17160F;
+  --tinta-suave: #23221A;
+  --papel: #EFEBE2;
+  --papel-forte: #E3DDCE;
+  --latao: #B08D4F;
+  --latao-forte: #8F7038;
+  --verde-navalha: #33453A;
+  --vermelho-couro: #8C3B32;
+  --texto: #1C1B16;
+  --texto-suave: #6B6656;
+  --branco: #FFFFFF;
+  --borda: #D8D1BF;
+
+  --fonte-titulo: 'Fraunces', Georgia, serif;
+  --fonte-corpo: 'Inter', -apple-system, sans-serif;
+
+  --radius: 3px;
+  --sombra: none;
+}

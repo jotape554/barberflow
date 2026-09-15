@@ -1,0 +1,66 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+
+export default function Registro() {
+  const { registrar } = useAuth();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ nomeBarbearia: '', nomeAdmin: '', email: '', senha: '' });
+  const [erro, setErro] = useState('');
+  const [carregando, setCarregando] = useState(false);
+
+  function atualizar(campo, valor) {
+    setForm((f) => ({ ...f, [campo]: valor }));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setErro('');
+    setCarregando(true);
+    try {
+      await registrar(form);
+      navigate('/painel');
+    } catch (err) {
+      setErro(err.message || 'Não foi possível criar a conta.');
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  return (
+    <div className="auth-shell">
+      <div className="auth-card">
+        <h1>Criar barbearia</h1>
+        <p className="sub">Sua conta e seu painel ficam prontos em um passo.</p>
+
+        {erro && <div className="erro">{erro}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="campo">
+            <label>Nome da barbearia</label>
+            <input value={form.nomeBarbearia} onChange={(e) => atualizar('nomeBarbearia', e.target.value)} required />
+          </div>
+          <div className="campo">
+            <label>Seu nome</label>
+            <input value={form.nomeAdmin} onChange={(e) => atualizar('nomeAdmin', e.target.value)} required />
+          </div>
+          <div className="campo">
+            <label>E-mail</label>
+            <input type="email" value={form.email} onChange={(e) => atualizar('email', e.target.value)} required />
+          </div>
+          <div className="campo">
+            <label>Senha</label>
+            <input type="password" value={form.senha} onChange={(e) => atualizar('senha', e.target.value)} required />
+          </div>
+          <button className="btn btn-latao" style={{ width: '100%', justifyContent: 'center' }} disabled={carregando}>
+            {carregando ? 'Criando...' : 'Criar barbearia'}
+          </button>
+        </form>
+
+        <div className="auth-troca">
+          Já tem conta? <Link to="/login">Entrar</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
