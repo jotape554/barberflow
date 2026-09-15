@@ -6,7 +6,7 @@
 .pub-header {
   background: var(--tinta);
   color: var(--papel);
-  padding: 48px 24px 40px;
+  padding: 56px 24px 76px;
   text-align: center;
 }
 
@@ -26,15 +26,16 @@
 
 .pub-content {
   max-width: 640px;
-  margin: -28px auto 60px;
+  margin: -48px auto 60px;
   padding: 0 20px;
 }
 
 .pub-card {
   background: var(--branco);
   border: 1px solid var(--borda);
-  border-radius: var(--radius);
-  padding: 28px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--sombra-lg);
+  padding: 32px;
 }
 
 .pub-passos {
@@ -50,12 +51,14 @@
   border-bottom: 3px solid var(--borda);
   color: var(--texto-suave);
   font-size: 0.85rem;
+  font-weight: 500;
+  transition: border-color var(--transicao), color var(--transicao);
 }
 
 .pub-passo.ativo {
   border-color: var(--latao);
   color: var(--texto);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .pub-passo.feito {
@@ -71,54 +74,58 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
-  border: 1px solid var(--borda);
+  padding: 15px 18px;
+  border: 1px solid var(--borda-forte);
   border-radius: var(--radius);
   background: var(--branco);
   text-align: left;
   width: 100%;
   font-family: var(--fonte-corpo);
   font-size: 0.95rem;
+  transition: border-color var(--transicao), background var(--transicao), transform var(--transicao);
 }
 
-.opcao:hover { border-color: var(--latao); }
+.opcao:hover { border-color: var(--latao); transform: translateY(-1px); }
 
 .opcao.selecionada {
   border-color: var(--latao);
-  background: #FBF6EC;
+  background: var(--latao-suave);
 }
 
 .opcao .preco { color: var(--texto-suave); font-size: 0.88rem; }
 
 .horarios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
   gap: 8px;
 }
 
 .horario-slot {
-  padding: 9px 0;
+  padding: 10px 0;
   text-align: center;
-  border: 1px solid var(--borda);
-  border-radius: var(--radius);
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--radius-sm);
   background: var(--branco);
   font-size: 0.88rem;
+  font-weight: 500;
+  transition: border-color var(--transicao), background var(--transicao), color var(--transicao);
 }
 
 .horario-slot:hover { border-color: var(--latao); }
-.horario-slot.selecionado { background: var(--latao); border-color: var(--latao); color: var(--tinta); font-weight: 600; }
+.horario-slot.selecionado { background: var(--latao); border-color: var(--latao); color: var(--tinta); font-weight: 700; }
 
 .pub-confirmacao {
   text-align: center;
-  padding: 20px 0;
+  padding: 24px 0;
 }
 
 .pub-confirmacao .icone {
-  width: 52px; height: 52px;
+  width: 56px; height: 56px;
   border-radius: 50%;
   background: var(--verde-navalha);
   color: var(--papel);
   display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px;
-  font-size: 1.4rem;
+  margin: 0 auto 18px;
+  font-size: 1.5rem;
+  box-shadow: var(--sombra);
 }
