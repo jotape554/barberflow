@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.Normalizer;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +42,7 @@ public class AuthService {
         Barbearia barbearia = Barbearia.builder()
                 .nome(req.getNomeBarbearia())
                 .slug(slug)
+                .dataFimTrial(LocalDate.now().plusDays(AssinaturaService.DIAS_TRIAL))
                 .build();
         barbearia = barbeariaRepository.save(barbearia);
 

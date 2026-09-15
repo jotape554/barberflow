@@ -8,6 +8,7 @@ const ITENS = [
   { to: '/painel/servicos', label: 'Serviços', icone: '✂' },
   { to: '/painel/profissionais', label: 'Profissionais', icone: '◔' },
   { to: '/painel/financeiro', label: 'Financeiro', icone: '◈' },
+  { to: '/painel/assinatura', label: 'Assinatura', icone: '◆' },
 ];
 
 function iniciais(nome) {

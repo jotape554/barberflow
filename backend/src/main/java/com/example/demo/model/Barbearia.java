@@ -5,6 +5,7 @@ import com.example.demo.enums.StatusAssinaturaSaas;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,6 +42,9 @@ public class Barbearia {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private StatusAssinaturaSaas statusAssinaturaSaas = StatusAssinaturaSaas.TRIAL;
+
+    /** Fim do período de teste gratuito. Após essa data, sem status ATIVA, o acesso ao painel é bloqueado. */
+    private LocalDate dataFimTrial;
 
     @Builder.Default
     private LocalDateTime criadoEm = LocalDateTime.now();

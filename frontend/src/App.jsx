@@ -1,7 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
+import { api } from './api/http';
 
 import Login from './pages/auth/Login';
 import Registro from './pages/auth/Registro';
@@ -11,13 +13,61 @@ import Servicos from './pages/Servicos';
 import Profissionais from './pages/Profissionais';
 import Agenda from './pages/Agenda';
 import Financeiro from './pages/Financeiro';
+import Assinatura from './pages/Assinatura';
 import AgendamentoPublico from './pages/public/AgendamentoPublico';
 
+function TrialBanner({ status }) {
+  if (!status || status.status !== 'TRIAL' || status.diasRestantesTrial == null) return null;
+  if (!status.acessoLiberado) return null;
+  if (status.diasRestantesTrial > 3) return null;
+
+  return (
+    <div
+      style={{
+        background: 'var(--latao-suave)',
+        border: '1px solid var(--latao)',
+        borderRadius: 'var(--radius-sm)',
+        padding: '10px 16px',
+        marginBottom: 24,
+        fontSize: '0.9rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: 12,
+        flexWrap: 'wrap',
+      }}
+    >
+      <span>
+        {status.diasRestantesTrial > 0
+          ? `Seu período de teste termina em ${status.diasRestantesTrial} dia${status.diasRestantesTrial === 1 ? '' : 's'}.`
+          : 'Seu período de teste termina hoje.'}
+      </span>
+      <a href="/painel/assinatura" className="btn btn-latao" style={{ padding: '6px 14px' }}>Escolher plano</a>
+    </div>
+  );
+}
+
 function PainelLayout() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [status, setStatus] = useState(null);
+
+  useEffect(() => {
+    api.get('/api/assinatura')
+      .then((s) => {
+        setStatus(s);
+        if (!s.acessoLiberado && location.pathname !== '/painel/assinatura') {
+          navigate('/painel/assinatura', { replace: true });
+        }
+      })
+      .catch(() => {});
+  }, [location.pathname]);
+
   return (
     <div className="app-shell">
       <Sidebar />
       <main className="main">
+        <TrialBanner status={status} />
         <Outlet />
       </main>
     </div>
@@ -48,6 +98,7 @@ export default function App() {
             <Route path="servicos" element={<Servicos />} />
             <Route path="profissionais" element={<Profissionais />} />
             <Route path="financeiro" element={<Financeiro />} />
+            <Route path="assinatura" element={<Assinatura />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/painel" replace />} />

@@ -32,7 +32,9 @@ async function request(path, { method = 'GET', body, autenticado = true } = {}) 
 
   if (!resp.ok) {
     const mensagem = (data && data.mensagem) || `Erro ${resp.status}`;
-    throw new Error(mensagem);
+    const erro = new Error(mensagem);
+    erro.status = resp.status;
+    throw erro;
   }
 
   return data;

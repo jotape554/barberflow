@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.security.AssinaturaGateFilter;
 import com.example.demo.security.CustomUserDetailsService;
 import com.example.demo.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
+    private final AssinaturaGateFilter assinaturaGateFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -55,7 +57,8 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(assinaturaGateFilter, JwtAuthFilter.class);
 
         return http.build();
     }
