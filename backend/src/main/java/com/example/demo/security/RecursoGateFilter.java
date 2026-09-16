@@ -37,7 +37,8 @@ public class RecursoGateFilter extends OncePerRequestFilter {
     private static final Map<String, Recurso> RECURSO_POR_PREFIXO = Map.of(
             "/api/dashboard", Recurso.DASHBOARD,
             "/api/receitas", Recurso.FINANCEIRO,
-            "/api/despesas", Recurso.FINANCEIRO
+            "/api/despesas", Recurso.FINANCEIRO,
+            "/api/comissoes", Recurso.COMISSOES
     );
 
     private final BarbeariaRepository barbeariaRepository;

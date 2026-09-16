@@ -27,7 +27,7 @@ export default function Financeiro() {
   const [comissoes, setComissoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
-  const [bloqueioFinanceiro, setBloqueioFinanceiro] = useState(null);
+  const [bloqueio, setBloqueio] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
   const [formDespesa, setFormDespesa] = useState(DESPESA_VAZIA);
 
@@ -35,26 +35,24 @@ export default function Financeiro() {
 
   function carregar() {
     setCarregando(true);
-    setBloqueioFinanceiro(null);
+    setBloqueio(null);
 
-    // Comissão continua liberada em qualquer plano; receitas/despesas exigem plano
-    // Profissional ou superior — por isso são pedidas separadamente.
-    const pedidoComissoes = api.get('/api/comissoes').then(setComissoes);
+    // Financeiro e Comissões exigem o mesmo plano mínimo — por isso um bloqueio único
+    // cobre as três abas, mesmo profissional só pedindo comissões.
+    const pedidos = ehProfissional
+      ? [Promise.resolve([]), Promise.resolve([]), api.get('/api/comissoes')]
+      : [api.get('/api/receitas'), api.get('/api/despesas'), api.get('/api/comissoes')];
 
-    const pedidoFinanceiro = ehProfissional
-      ? Promise.resolve()
-      : Promise.all([api.get('/api/receitas'), api.get('/api/despesas')])
-          .then(([r, d]) => {
-            setReceitas(r);
-            setDespesas(d);
-          })
-          .catch((e) => {
-            if (e.dados?.upgradeNecessario) setBloqueioFinanceiro(e.dados);
-            else throw e;
-          });
-
-    Promise.all([pedidoComissoes, pedidoFinanceiro])
-      .catch((e) => setErro(e.message))
+    Promise.all(pedidos)
+      .then(([r, d, c]) => {
+        setReceitas(r);
+        setDespesas(d);
+        setComissoes(c);
+      })
+      .catch((e) => {
+        if (e.dados?.upgradeNecessario) setBloqueio(e.dados);
+        else setErro(e.message);
+      })
       .finally(() => setCarregando(false));
   }
 
@@ -95,7 +93,7 @@ export default function Financeiro() {
           <h2>Financeiro</h2>
           <p>Receitas geradas pelos atendimentos, despesas e comissões.</p>
         </div>
-        {aba === 'despesas' && !bloqueioFinanceiro && (
+        {aba === 'despesas' && !bloqueio && (
           <button className="btn btn-latao" onClick={abrirNovaDespesa}>Nova despesa</button>
         )}
       </div>
@@ -114,8 +112,8 @@ export default function Financeiro() {
         ))}
       </div>
 
-      {bloqueioFinanceiro && (aba === 'receitas' || aba === 'despesas') ? (
-        <RecursoBloqueado planoNecessario={bloqueioFinanceiro.planoNecessario} mensagem={bloqueioFinanceiro.mensagem} />
+      {bloqueio ? (
+        <RecursoBloqueado planoNecessario={bloqueio.planoNecessario} mensagem={bloqueio.mensagem} />
       ) : (
       <div className="panel">
         {carregando ? (

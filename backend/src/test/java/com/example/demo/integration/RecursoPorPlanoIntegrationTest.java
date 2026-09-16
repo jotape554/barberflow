@@ -65,10 +65,12 @@ class RecursoPorPlanoIntegrationTest {
                 .andExpect(status().isOk());
         mockMvc.perform(get("/api/despesas").header("Authorization", "Bearer " + sessao.token()))
                 .andExpect(status().isOk());
+        mockMvc.perform(get("/api/comissoes").header("Authorization", "Bearer " + sessao.token()))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void planoBasicoAtivoBloqueiaDashboardEFinanceiroComRespostaElegante() throws Exception {
+    void planoBasicoAtivoBloqueiaDashboardFinanceiroEComissoesComRespostaElegante() throws Exception {
         Sessao sessao = registrar("basico-recursos@teste.com");
         ativarPlano(sessao.barbeariaId(), PlanoSaas.BASICO);
 
@@ -85,10 +87,14 @@ class RecursoPorPlanoIntegrationTest {
         mockMvc.perform(get("/api/despesas").header("Authorization", "Bearer " + sessao.token()))
                 .andExpect(status().is(402))
                 .andExpect(jsonPath("$.recurso").value("FINANCEIRO"));
+
+        mockMvc.perform(get("/api/comissoes").header("Authorization", "Bearer " + sessao.token()))
+                .andExpect(status().is(402))
+                .andExpect(jsonPath("$.recurso").value("COMISSOES"));
     }
 
     @Test
-    void planoProfissionalAtivoLiberaDashboardEFinanceiro() throws Exception {
+    void planoProfissionalAtivoLiberaDashboardFinanceiroEComissoes() throws Exception {
         Sessao sessao = registrar("profissional-recursos@teste.com");
         ativarPlano(sessao.barbeariaId(), PlanoSaas.PROFISSIONAL);
 
@@ -97,6 +103,8 @@ class RecursoPorPlanoIntegrationTest {
         mockMvc.perform(get("/api/receitas").header("Authorization", "Bearer " + sessao.token()))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/api/despesas").header("Authorization", "Bearer " + sessao.token()))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/comissoes").header("Authorization", "Bearer " + sessao.token()))
                 .andExpect(status().isOk());
     }
 
