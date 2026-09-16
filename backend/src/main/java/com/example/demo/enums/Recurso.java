@@ -3,7 +3,7 @@ package com.example.demo.enums;
 import lombok.Getter;
 
 /**
- * Catálogo central de "recursos" do BarberPro e o plano mínimo que dá acesso a cada um.
+ * Catálogo central de "recursos" do BarberFlow e o plano mínimo que dá acesso a cada um.
  * Único lugar que precisa mudar para reclassificar um recurso entre planos, ou para
  * cadastrar um recurso novo (basta adicionar aqui e apontar o plano mínimo desejado).
  *

@@ -1,4 +1,4 @@
-# BarberPro — Fases 1 a 6 (Backend)
+# BarberFlow — Fases 1 a 6 (Backend)
 
 Este pacote já entrega o backend com: multi-tenant real, autenticação JWT,
 CRUDs protegidos, **financeiro automático** (Receita + Comissão geradas ao
@@ -119,5 +119,5 @@ POST /public/barbearias/barbearia-do-joao/agendamentos
 - Reintegrar Plano/Assinatura do cliente final (corte ilimitado), se você
   já tinha essa lógica pronta — me manda o código que eu integro.
 - Frontend: painel administrativo (React) + página pública de agendamento
-  + site institucional do BarberPro. Ainda não foi feito — é o maior
+  + site institucional do BarberFlow. Ainda não foi feito — é o maior
   pedaço que falta para "vender" o produto visualmente.

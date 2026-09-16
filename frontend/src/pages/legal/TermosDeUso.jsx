@@ -10,13 +10,13 @@ export default function TermosDeUso() {
       </div>
 
       <div className="doc-aviso">
-        Este documento descreve as regras de uso do BarberPro de forma simples e direta. Não
+        Este documento descreve as regras de uso do BarberFlow de forma simples e direta. Não
         substitui aconselhamento jurídico profissional.
       </div>
 
-      <h2>1. O que é o BarberPro</h2>
+      <h2>1. O que é o BarberFlow</h2>
       <p>
-        O BarberPro é um sistema de gestão (SaaS) para barbearias, oferecendo agenda, cadastro
+        O BarberFlow é um sistema de gestão (SaaS) para barbearias, oferecendo agenda, cadastro
         de clientes e profissionais, controle financeiro, cálculo automático de comissões,
         página pública de agendamento para os clientes finais, e recursos adicionais conforme o
         plano contratado. Ao criar uma conta, você concorda com estes termos.
@@ -39,7 +39,7 @@ export default function TermosDeUso() {
       </ul>
 
       <h2>4. Uso aceitável</h2>
-      <p>Ao usar o BarberPro, você concorda em não:</p>
+      <p>Ao usar o BarberFlow, você concorda em não:</p>
       <ul>
         <li>Usar o sistema para fins ilegais ou para prejudicar terceiros;</li>
         <li>Tentar acessar dados de outra barbearia sem autorização;</li>
@@ -57,7 +57,7 @@ export default function TermosDeUso() {
 
       <h2>6. Disponibilidade do serviço</h2>
       <p>
-        Fazemos o possível para manter o BarberPro disponível e funcionando corretamente, mas
+        Fazemos o possível para manter o BarberFlow disponível e funcionando corretamente, mas
         não garantimos disponibilidade ininterrupta. Podem ocorrer manutenções programadas ou
         interrupções não planejadas. Recomendamos manter seus próprios registros importantes
         (ex.: exportações periódicas) sempre que possível.
@@ -65,7 +65,7 @@ export default function TermosDeUso() {
 
       <h2>7. Limitação de responsabilidade</h2>
       <p>
-        O BarberPro é fornecido "como está". Na máxima extensão permitida por lei, não nos
+        O BarberFlow é fornecido "como está". Na máxima extensão permitida por lei, não nos
         responsabilizamos por perdas indiretas, lucros cessantes, ou danos decorrentes de uso
         indevido do sistema, indisponibilidade temporária, ou decisões de negócio tomadas com
         base nas informações do sistema.
@@ -80,7 +80,7 @@ export default function TermosDeUso() {
 
       <h2>9. Mudanças nestes termos</h2>
       <p>
-        Podemos atualizar estes termos conforme o BarberPro evolui. Mudanças importantes serão
+        Podemos atualizar estes termos conforme o BarberFlow evolui. Mudanças importantes serão
         comunicadas por e-mail ou por aviso dentro do painel.
       </p>
 

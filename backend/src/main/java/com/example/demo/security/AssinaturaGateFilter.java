@@ -66,7 +66,7 @@ public class AssinaturaGateFilter extends OncePerRequestFilter {
         corpo.put("timestamp", LocalDateTime.now());
         corpo.put("status", 402);
         corpo.put("erro", "Payment Required");
-        corpo.put("mensagem", "Seu período de teste terminou. Escolha um plano para continuar usando o BarberPro.");
+        corpo.put("mensagem", "Seu período de teste terminou. Escolha um plano para continuar usando o BarberFlow.");
         objectMapper.writeValue(response.getWriter(), corpo);
     }
 }

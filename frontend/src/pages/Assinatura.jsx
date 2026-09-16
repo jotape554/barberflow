@@ -82,7 +82,7 @@ export default function Assinatura() {
       <div className="page-header">
         <div>
           <h2>Assinatura</h2>
-          <p>Seu plano no BarberPro.</p>
+          <p>Seu plano no BarberFlow.</p>
         </div>
         {status?.status === 'ATIVA' && (
           <button className="btn btn-secundario" disabled={processando === 'portal'} onClick={abrirPortal}>

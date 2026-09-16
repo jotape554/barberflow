@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.math.BigDecimal;
 
 /**
- * Plano de assinatura da BARBEARIA dentro do BarberPro (o SaaS em si).
+ * Plano de assinatura da BARBEARIA dentro do BarberFlow (o SaaS em si).
  * Não confundir com o plano que a barbearia oferece para os próprios clientes
  * (ex: corte ilimitado) — isso é outra entidade, referente ao produto da barbearia.
  */

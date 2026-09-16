@@ -34,7 +34,7 @@ public class AssistenteIaService {
     private static final int MAX_RODADAS_FERRAMENTAS = 5;
 
     private static final String PROMPT_SISTEMA = """
-            Você é o assistente de gestão do BarberPro, sistema de gestão para barbearias.
+            Você é o assistente de gestão do BarberFlow, sistema de gestão para barbearias.
             Responda em português, de forma direta e objetiva, à pergunta do dono/gerente sobre
             os dados do NEGÓCIO DELE.
 

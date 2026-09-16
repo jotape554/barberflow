@@ -58,7 +58,7 @@ export default function Institucional() {
       <nav className="nb-nav">
         <div className="nb-logo">
           <span className="nb-logo-mark">B</span>
-          BarberPro
+          BarberFlow
         </div>
         <div className="nb-nav-links">
           <a href="#recursos">Recursos</a>
@@ -152,7 +152,7 @@ export default function Institucional() {
         <div className="nb-section-inner">
           <div className="nb-compare">
             <div className="nb-compare-card problema">
-              <h3>Sem o BarberPro</h3>
+              <h3>Sem o BarberFlow</h3>
               <ul>
                 <li><span className="marca">✕</span> Agenda no caderno ou no WhatsApp, com risco de marcar dois clientes no mesmo horário</li>
                 <li><span className="marca">✕</span> Comissão calculada na mão, recibo por recibo</li>
@@ -161,7 +161,7 @@ export default function Institucional() {
               </ul>
             </div>
             <div className="nb-compare-card solucao">
-              <h3>Com o BarberPro</h3>
+              <h3>Com o BarberFlow</h3>
               <ul>
                 <li><span className="marca">✓</span> Agenda automática, sem conflito de horário entre profissionais</li>
                 <li><span className="marca">✓</span> Comissão calculada sozinha a cada atendimento concluído</li>
@@ -249,7 +249,7 @@ export default function Institucional() {
         <div className="nb-section-inner">
           <div className="nb-section-head">
             <span className="nb-eyebrow">Depoimentos</span>
-            <h2 style={{ color: 'var(--tinta)' }}>Quem já roda com o BarberPro</h2>
+            <h2 style={{ color: 'var(--tinta)' }}>Quem já roda com o BarberFlow</h2>
           </div>
           <div className="nb-testimonials-grid">
             {DEPOIMENTOS.map((d) => (
@@ -282,7 +282,7 @@ export default function Institucional() {
           <div className="nb-footer-brand">
             <div className="nb-logo">
               <span className="nb-logo-mark">B</span>
-              BarberPro
+              BarberFlow
             </div>
             <p>O sistema de gestão feito pra barbearia: agenda, financeiro e cobrança de assinatura, tudo automático.</p>
           </div>
@@ -316,7 +316,7 @@ export default function Institucional() {
           </div>
         </div>
         <div className="nb-footer-bottom">
-          <span>© {new Date().getFullYear()} BarberPro. Todos os direitos reservados.</span>
+          <span>© {new Date().getFullYear()} BarberFlow. Todos os direitos reservados.</span>
         </div>
       </footer>
     </div>

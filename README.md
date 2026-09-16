@@ -1,4 +1,4 @@
-# BarberPro
+# BarberFlow
 
 Sistema de gestão para barbearias (multi-tenant/SaaS): agenda, clientes,
 serviços, profissionais e financeiro automático, com painel administrativo
@@ -51,4 +51,4 @@ O Vite já faz proxy de `/api`, `/auth` e `/public` para `http://localhost:8080`
 - Frontend: login/registro, painel (dashboard, agenda, clientes, serviços,
   profissionais, financeiro) — completo.
 - Pendente: página pública de agendamento (cliente final) e site
-  institucional do BarberPro.
+  institucional do BarberFlow.

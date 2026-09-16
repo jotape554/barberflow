@@ -51,7 +51,7 @@ public class EmailService {
         }
 
         String texto = """
-                Recebemos um pedido para redefinir sua senha no BarberPro.
+                Recebemos um pedido para redefinir sua senha no BarberFlow.
 
                 Clique no link abaixo para criar uma nova senha (válido por 1 hora):
                 %s
@@ -62,7 +62,7 @@ public class EmailService {
         Map<String, Object> corpo = Map.of(
                 "personalizations", List.of(Map.of("to", List.of(Map.of("email", destinatario)))),
                 "from", Map.of("email", remetenteLimpo),
-                "subject", "Redefinir senha — BarberPro",
+                "subject", "Redefinir senha — BarberFlow",
                 "content", List.of(Map.of("type", "text/plain", "value", texto))
         );
 
