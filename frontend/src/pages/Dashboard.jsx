@@ -1,8 +1,38 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/http';
+import { useAuth } from '../context/AuthContext';
 import RecursoBloqueado from '../components/RecursoBloqueado';
 import EstadoVazio from '../components/EstadoVazio';
+
+function LinkAgendamentoPublico({ slug }) {
+  const [copiado, setCopiado] = useState(false);
+  const link = `${window.location.origin}/b/${slug}`;
+
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      // navegadores sem permissão de clipboard: o campo já fica selecionável pra copiar na mão
+    }
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
+  }
+
+  return (
+    <div className="panel" style={{ padding: '16px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+      <div style={{ flex: 1, minWidth: 220 }}>
+        <div className="rotulo" style={{ color: 'var(--texto-suave)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: 4 }}>
+          Link de agendamento pro seu cliente
+        </div>
+        <div style={{ fontFamily: 'monospace', fontSize: '0.92rem' }}>{link}</div>
+      </div>
+      <button type="button" className="btn btn-secundario" onClick={copiar}>
+        {copiado ? 'Copiado!' : 'Copiar link'}
+      </button>
+    </div>
+  );
+}
 
 function formatarMoeda(valor) {
   return Number(valor ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -21,6 +51,7 @@ function Variacao({ percentual }) {
 }
 
 export default function Dashboard() {
+  const { usuario } = useAuth();
   const [dados, setDados] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
@@ -68,6 +99,8 @@ export default function Dashboard() {
 
       {dados && (
         <>
+          {usuario?.barbeariaSlug && <LinkAgendamentoPublico slug={usuario.barbeariaSlug} />}
+
           <div className="acoes-rapidas">
             <Link className="btn btn-latao" to="/painel/agenda?novo=1">Novo agendamento</Link>
             <Link className="btn btn-secundario" to="/painel/clientes?novo=1">Novo cliente</Link>
