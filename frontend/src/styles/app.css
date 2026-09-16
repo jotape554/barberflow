@@ -178,6 +178,69 @@ button {
   letter-spacing: 0.03em;
 }
 
+.metric-card .variacao {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.variacao-positiva { color: var(--verde-navalha); }
+.variacao-negativa { color: var(--vermelho-couro); }
+.variacao-neutra { color: var(--texto-suave); }
+
+.secao-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 1.15rem;
+  margin: 36px 0 14px;
+}
+
+.acoes-rapidas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.mini-grafico {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 110px;
+  padding: 20px;
+}
+
+.mini-grafico-barra {
+  flex: 1;
+  background: var(--latao);
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+  position: relative;
+}
+
+.mini-grafico-barra:hover { background: var(--latao-forte); }
+
+.mini-grafico-legenda {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px 16px;
+  font-size: 0.75rem;
+  color: var(--texto-suave);
+}
+
+.ranking-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.ranking-linha:last-child { border-bottom: none; }
+
+.ranking-linha .nome { font-weight: 600; }
+.ranking-linha .detalhe { color: var(--texto-suave); font-size: 0.85rem; }
+
 .panel {
   background: var(--branco);
   border: 1px solid var(--borda);
@@ -222,6 +285,7 @@ tbody tr:hover { background: var(--papel); }
   color: var(--papel);
   font-size: 0.9rem;
   font-weight: 600;
+  text-decoration: none;
   transition: background var(--transicao), transform var(--transicao), box-shadow var(--transicao);
 }
 

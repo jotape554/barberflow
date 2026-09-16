@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../api/http';
 import Modal from '../components/Modal';
 import EstadoVazio from '../components/EstadoVazio';
@@ -41,6 +42,7 @@ export default function Agenda() {
   const [modalConcluir, setModalConcluir] = useState(null);
   const [formaPagamento, setFormaPagamento] = useState('PIX');
   const [form, setForm] = useState(NOVO_VAZIO);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   function carregarAgendamentos() {
     setCarregando(true);
@@ -56,6 +58,15 @@ export default function Agenda() {
     api.get('/api/clientes/todos').then(setClientes).catch(() => {});
     api.get('/api/profissionais').then(setProfissionais).catch(() => {});
     api.get('/api/servicos').then(setServicos).catch(() => {});
+  }, []);
+
+  // Vindo do atalho "Novo agendamento" do painel (?novo=1) — já abre o formulário.
+  useEffect(() => {
+    if (searchParams.get('novo') === '1') {
+      abrirNovo();
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function abrirNovo() {

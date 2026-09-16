@@ -144,7 +144,7 @@ class AgendamentoFlowIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
         JsonNode dashboard = objectMapper.readTree(dashboardResultado.getResponse().getContentAsString());
-        assertThat(dashboard.get("agendamentosConcluidosHoje").asInt()).isEqualTo(0); // agendamento foi para amanhã, não "hoje"
+        assertThat(dashboard.get("visaoGeral").get("atendimentosHoje").asInt()).isEqualTo(0); // agendamento foi para amanhã, não "hoje"
     }
 
     @Test

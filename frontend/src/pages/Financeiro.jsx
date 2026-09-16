@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../api/http';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
@@ -30,8 +31,24 @@ export default function Financeiro() {
   const [bloqueio, setBloqueio] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
   const [formDespesa, setFormDespesa] = useState(DESPESA_VAZIA);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const abas = ehProfissional ? ABAS.filter((a) => a.id === 'comissoes') : ABAS;
+
+  // Vindo dos atalhos do painel: ?aba=despesas troca a aba, ?novo=1 já abre o formulário.
+  useEffect(() => {
+    const abaPedida = searchParams.get('aba');
+    if (abaPedida && abas.some((a) => a.id === abaPedida)) {
+      setAba(abaPedida);
+    }
+    if (searchParams.get('novo') === '1' && !ehProfissional) {
+      abrirNovaDespesa();
+    }
+    if (abaPedida || searchParams.get('novo')) {
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function carregar() {
     setCarregando(true);

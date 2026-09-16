@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../api/http';
 import Modal from '../components/Modal';
 import EstadoVazio from '../components/EstadoVazio';
@@ -12,6 +13,7 @@ export default function Servicos() {
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState(VAZIO);
   const [erro, setErro] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
 
   function carregar() {
     setCarregando(true);
@@ -19,6 +21,15 @@ export default function Servicos() {
   }
 
   useEffect(carregar, []);
+
+  // Vindo do atalho "Novo serviço" do painel (?novo=1) — já abre o formulário.
+  useEffect(() => {
+    if (searchParams.get('novo') === '1') {
+      abrirNovo();
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function abrirNovo() {
     setEditando(null);
