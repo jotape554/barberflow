@@ -12,6 +12,7 @@ import com.example.demo.security.JwtService;
 import com.example.demo.security.UsuarioPrincipal;
 import com.example.demo.exception.RegraDeNegocioException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,17 +20,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.Normalizer;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
+    private static final long VALIDADE_TOKEN_RESET_MINUTOS = 60;
 
     private final BarbeariaRepository barbeariaRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final EmailService emailService;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     @Transactional
     public AuthResponse registrar(RegistroRequest req) {
@@ -74,6 +84,38 @@ public class AuthService {
         Long profissionalId = usuario.getProfissional() != null ? usuario.getProfissional().getId() : null;
         return new AuthResponse(token, usuario.getNome(), usuario.getPapel().name(),
                 usuario.getBarbearia().getId(), usuario.getBarbearia().getSlug(), profissionalId);
+    }
+
+    /**
+     * Sempre "funciona" do ponto de vista do cliente, exista ou não o e-mail — nunca revela
+     * se um endereço tem conta cadastrada (evita que alguém descubra e-mails de clientes).
+     */
+    @Transactional
+    public void esqueciSenha(String email) {
+        usuarioRepository.findByEmail(email).ifPresent(usuario -> {
+            String token = UUID.randomUUID().toString();
+            usuario.setResetSenhaToken(token);
+            usuario.setResetSenhaExpiraEm(Instant.now().plus(VALIDADE_TOKEN_RESET_MINUTOS, ChronoUnit.MINUTES));
+            usuarioRepository.save(usuario);
+
+            String link = frontendUrl + "/redefinir-senha?token=" + token;
+            emailService.enviarRedefinicaoSenha(usuario.getEmail(), link);
+        });
+    }
+
+    @Transactional
+    public void redefinirSenha(String token, String novaSenha) {
+        Usuario usuario = usuarioRepository.findByResetSenhaToken(token)
+                .orElseThrow(() -> new RegraDeNegocioException("Link inválido ou expirado."));
+
+        if (usuario.getResetSenhaExpiraEm() == null || Instant.now().isAfter(usuario.getResetSenhaExpiraEm())) {
+            throw new RegraDeNegocioException("Link inválido ou expirado.");
+        }
+
+        usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
+        usuario.setResetSenhaToken(null);
+        usuario.setResetSenhaExpiraEm(null);
+        usuarioRepository.save(usuario);
     }
 
     private String gerarSlugUnico(String nome) {

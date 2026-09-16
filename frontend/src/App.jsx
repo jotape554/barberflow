@@ -7,6 +7,8 @@ import { api } from './api/http';
 
 import Login from './pages/auth/Login';
 import Registro from './pages/auth/Registro';
+import EsqueciSenha from './pages/auth/EsqueciSenha';
+import RedefinirSenha from './pages/auth/RedefinirSenha';
 import Dashboard from './pages/Dashboard';
 import Clientes from './pages/Clientes';
 import Servicos from './pages/Servicos';
@@ -91,6 +93,8 @@ export default function App() {
           <Route path="/" element={<Institucional />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
+          <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/b/:slug" element={<AgendamentoPublico />} />
 
           <Route

@@ -41,6 +41,9 @@ export default function Login() {
             <label>Senha</label>
             <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
           </div>
+          <div style={{ textAlign: 'right', marginTop: -8, marginBottom: 20 }}>
+            <Link to="/esqueci-senha" style={{ fontSize: '0.85rem', color: 'var(--latao-forte)' }}>Esqueci minha senha</Link>
+          </div>
           <button className="btn btn-latao" style={{ width: '100%', justifyContent: 'center' }} disabled={carregando}>
             {carregando ? 'Entrando...' : 'Entrar'}
           </button>

@@ -4,6 +4,8 @@ import com.example.demo.enums.Papel;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
+
 @Entity
 @Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Getter
@@ -41,4 +43,8 @@ public class Usuario {
 
     @Builder.Default
     private boolean ativo = true;
+
+    /** Preenchidos só durante um pedido de "esqueci minha senha" em andamento. */
+    private String resetSenhaToken;
+    private Instant resetSenhaExpiraEm;
 }
