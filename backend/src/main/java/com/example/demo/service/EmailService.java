@@ -25,14 +25,18 @@ public class EmailService {
      * de "esqueci minha senha" por falta de credenciais de SMTP.
      */
     public void enviarRedefinicaoSenha(String destinatario, String link) {
-        if (remetente == null || remetente.isBlank()) {
+        // .trim() porque é comum sobrar um espaço ou quebra de linha ao colar a variável
+        // de ambiente numa plataforma de deploy — isso quebra o parser de endereço de e-mail.
+        String remetenteLimpo = remetente == null ? "" : remetente.trim();
+
+        if (remetenteLimpo.isBlank()) {
             log.info("MAIL_USERNAME não configurado — envio de e-mail simulado. Link de redefinição para {}: {}",
                     destinatario, link);
             return;
         }
 
         SimpleMailMessage mensagem = new SimpleMailMessage();
-        mensagem.setFrom(remetente);
+        mensagem.setFrom(remetenteLimpo);
         mensagem.setTo(destinatario);
         mensagem.setSubject("Redefinir senha — BarberPro");
         mensagem.setText("""
