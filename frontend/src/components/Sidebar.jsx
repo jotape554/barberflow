@@ -36,7 +36,7 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand">Barber<span>Pro</span></div>
+      <div className="sidebar-brand">Barber<span>Flow</span></div>
       <nav>
         {itens.map((item) => (
           <NavLink

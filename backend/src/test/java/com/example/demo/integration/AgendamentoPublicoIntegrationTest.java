@@ -35,8 +35,8 @@ class AgendamentoPublicoIntegrationTest {
         MvcResult registro = mockMvc.perform(post("/auth/registro")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"nomeBarbearia":"Barbearia Publica","nomeAdmin":"Admin","email":"%s","senha":"123456"}
-                                """.formatted(email)))
+                                {"nomeBarbearia":"Barbearia Publica","nomeAdmin":"Admin","email":"%s","cpf":"%s","senha":"123456"}
+                                """.formatted(email, com.example.demo.util.CpfTestFixture.gerar(email))))
                 .andExpect(status().isOk())
                 .andReturn();
         JsonNode json = objectMapper.readTree(registro.getResponse().getContentAsString());

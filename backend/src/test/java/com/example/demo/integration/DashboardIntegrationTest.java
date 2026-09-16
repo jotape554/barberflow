@@ -32,8 +32,8 @@ class DashboardIntegrationTest {
         MvcResult resultado = mockMvc.perform(post("/auth/registro")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"nomeBarbearia":"Barbearia Dashboard","nomeAdmin":"Admin","email":"%s","senha":"123456"}
-                                """.formatted(email)))
+                                {"nomeBarbearia":"Barbearia Dashboard","nomeAdmin":"Admin","email":"%s","cpf":"%s","senha":"123456"}
+                                """.formatted(email, com.example.demo.util.CpfTestFixture.gerar(email))))
                 .andExpect(status().isOk())
                 .andReturn();
         return objectMapper.readTree(resultado.getResponse().getContentAsString()).get("token").asText();

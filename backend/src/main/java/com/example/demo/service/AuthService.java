@@ -11,6 +11,7 @@ import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.security.JwtService;
 import com.example.demo.security.UsuarioPrincipal;
 import com.example.demo.exception.RegraDeNegocioException;
+import com.example.demo.util.CpfValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,6 +48,14 @@ public class AuthService {
             throw new RegraDeNegocioException("Já existe um usuário com este e-mail.");
         }
 
+        String cpf = CpfValidator.somenteDigitos(req.getCpf());
+        if (!CpfValidator.isValido(cpf)) {
+            throw new RegraDeNegocioException("Informe um CPF válido.");
+        }
+        if (usuarioRepository.existsByCpf(cpf)) {
+            throw new RegraDeNegocioException("Já existe uma conta cadastrada com este CPF.");
+        }
+
         String slug = gerarSlugUnico(req.getNomeBarbearia());
 
         Barbearia barbearia = Barbearia.builder()
@@ -59,6 +68,7 @@ public class AuthService {
         Usuario admin = Usuario.builder()
                 .nome(req.getNomeAdmin())
                 .email(req.getEmail())
+                .cpf(cpf)
                 .senhaHash(passwordEncoder.encode(req.getSenha()))
                 .papel(Papel.ADMINISTRADOR)
                 .barbearia(barbearia)

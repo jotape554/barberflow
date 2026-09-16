@@ -18,6 +18,9 @@ public class RegistroRequest {
     @Email(message = "Informe um e-mail válido.")
     private String email;
 
+    @NotBlank(message = "Informe seu CPF.")
+    private String cpf;
+
     @NotBlank(message = "Informe uma senha.")
     private String senha;
 }

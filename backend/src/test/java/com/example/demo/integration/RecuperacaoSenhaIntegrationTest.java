@@ -32,8 +32,8 @@ class RecuperacaoSenhaIntegrationTest {
         mockMvc.perform(post("/auth/registro")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"nomeBarbearia":"Barbearia Teste","nomeAdmin":"Admin","email":"%s","senha":"senhaAntiga123"}
-                                """.formatted(email)))
+                                {"nomeBarbearia":"Barbearia Teste","nomeAdmin":"Admin","email":"%s","cpf":"%s","senha":"senhaAntiga123"}
+                                """.formatted(email, com.example.demo.util.CpfTestFixture.gerar(email))))
                 .andExpect(status().isOk());
     }
 

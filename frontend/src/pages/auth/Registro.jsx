@@ -5,12 +5,20 @@ import { useAuth } from '../../context/AuthContext';
 export default function Registro() {
   const { registrar } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ nomeBarbearia: '', nomeAdmin: '', email: '', senha: '' });
+  const [form, setForm] = useState({ nomeBarbearia: '', nomeAdmin: '', email: '', cpf: '', senha: '' });
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
   function atualizar(campo, valor) {
     setForm((f) => ({ ...f, [campo]: valor }));
+  }
+
+  function formatarCpf(valor) {
+    const digitos = valor.replace(/\D/g, '').slice(0, 11);
+    return digitos
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
   }
 
   async function handleSubmit(e) {
@@ -47,6 +55,16 @@ export default function Registro() {
           <div className="campo">
             <label>E-mail</label>
             <input type="email" value={form.email} onChange={(e) => atualizar('email', e.target.value)} required />
+          </div>
+          <div className="campo">
+            <label>CPF</label>
+            <input
+              value={form.cpf}
+              onChange={(e) => atualizar('cpf', formatarCpf(e.target.value))}
+              placeholder="000.000.000-00"
+              inputMode="numeric"
+              required
+            />
           </div>
           <div className="campo">
             <label>Senha</label>

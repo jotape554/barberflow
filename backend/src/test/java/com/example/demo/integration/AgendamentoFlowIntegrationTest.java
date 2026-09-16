@@ -33,8 +33,8 @@ class AgendamentoFlowIntegrationTest {
 
     private String registrarBarbeariaEObterToken(String email) throws Exception {
         String corpo = """
-                {"nomeBarbearia":"Barbearia Teste","nomeAdmin":"Admin","email":"%s","senha":"123456"}
-                """.formatted(email);
+                {"nomeBarbearia":"Barbearia Teste","nomeAdmin":"Admin","email":"%s","cpf":"%s","senha":"123456"}
+                """.formatted(email, com.example.demo.util.CpfTestFixture.gerar(email));
 
         MvcResult resultado = mockMvc.perform(post("/auth/registro")
                         .contentType(MediaType.APPLICATION_JSON)

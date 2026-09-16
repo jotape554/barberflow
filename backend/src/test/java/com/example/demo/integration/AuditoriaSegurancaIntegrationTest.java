@@ -31,8 +31,8 @@ class AuditoriaSegurancaIntegrationTest {
         MvcResult resultado = mockMvc.perform(post("/auth/registro")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"nomeBarbearia":"Barbearia Teste","nomeAdmin":"Admin","email":"%s","senha":"123456"}
-                                """.formatted(email)))
+                                {"nomeBarbearia":"Barbearia Teste","nomeAdmin":"Admin","email":"%s","cpf":"%s","senha":"123456"}
+                                """.formatted(email, com.example.demo.util.CpfTestFixture.gerar(email))))
                 .andExpect(status().isOk())
                 .andReturn();
         return objectMapper.readTree(resultado.getResponse().getContentAsString()).get("token").asText();
@@ -70,7 +70,7 @@ class AuditoriaSegurancaIntegrationTest {
     void registroSemNomeDaBarbeariaRetorna400NaoLevantaErroInterno() throws Exception {
         mockMvc.perform(post("/auth/registro")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nomeBarbearia\":\"\",\"nomeAdmin\":\"Admin\",\"email\":\"valido@teste.com\",\"senha\":\"123456\"}"))
+                        .content("{\"nomeBarbearia\":\"\",\"nomeAdmin\":\"Admin\",\"email\":\"valido@teste.com\",\"cpf\":\"" + com.example.demo.util.CpfTestFixture.gerar("valido@teste.com") + "\",\"senha\":\"123456\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.mensagem").value("Informe o nome da barbearia."));
     }

@@ -8,7 +8,10 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(name = "usuarios", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email"),
+        @UniqueConstraint(columnNames = "cpf")
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,6 +28,9 @@ public class Usuario {
 
     @Column(nullable = false)
     private String email;
+
+    /** Só preenchido para o administrador que criou a conta (evita reuso de trial com CPFs diferentes). */
+    private String cpf;
 
     @Column(nullable = false)
     @JsonIgnore
