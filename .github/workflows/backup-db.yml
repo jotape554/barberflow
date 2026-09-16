@@ -9,13 +9,12 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
-      - name: Instalar cliente do Postgres
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
       - name: Gerar o dump do banco
         env:
           DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
-        run: pg_dump "$DATABASE_URL" --format=custom --file=backup.dump
+        run: |
+          docker run --rm -e DATABASE_URL="$DATABASE_URL" postgres:latest \
+            sh -c 'pg_dump "$DATABASE_URL" --format=custom' > backup.dump
 
       - name: Criptografar o backup
         env:
