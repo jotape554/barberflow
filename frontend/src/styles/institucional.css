@@ -327,8 +327,15 @@
 .nb-persona-card p { font-size: 0.95rem; line-height: 1.5; opacity: 0.85; margin: 0; }
 
 /* ---------- Depoimentos ---------- */
-.nb-testimonials-section { background: var(--nb-accent); }
-.nb-testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.nb-testimonials-section { background: var(--nb-accent); padding-left: 0; padding-right: 0; }
+.nb-testimonials-wrap { overflow: hidden; padding: 8px 0; -webkit-mask-image: linear-gradient(to right, transparent, #000 64px, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(to right, transparent, #000 64px, #000 calc(100% - 64px), transparent); }
+.nb-testimonials-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  animation: nb-scroll 55s linear infinite;
+}
+.nb-testimonials-wrap:hover .nb-testimonials-track { animation-play-state: paused; }
 .nb-testimonial-card {
   background: var(--nb-white);
   padding: 28px;
@@ -337,6 +344,8 @@
   border-bottom-left-radius: 28px;
   border-top-left-radius: 4px;
   border-bottom-right-radius: 4px;
+  width: 340px;
+  flex-shrink: 0;
 }
 .nb-stars { color: #E0A72E; margin-bottom: 14px; font-size: 1.1rem; letter-spacing: 2px; }
 .nb-testimonial-card p.quote { font-size: 0.98rem; line-height: 1.55; margin-bottom: 18px; }
@@ -377,7 +386,7 @@
 /* ---------- Responsivo ---------- */
 @media (max-width: 900px) {
   .nb-hero-grid { grid-template-columns: 1fr; }
-  .nb-compare, .nb-features-grid, .nb-how-flow, .nb-personas-grid, .nb-testimonials-grid { grid-template-columns: 1fr; }
+  .nb-compare, .nb-features-grid, .nb-how-flow, .nb-personas-grid { grid-template-columns: 1fr; }
   .nb-nav-links { display: none; }
   .nb-hero h1 { font-size: 2.4rem; }
   .nb-footer-grid { grid-template-columns: 1fr 1fr; }

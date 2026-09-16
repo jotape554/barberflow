@@ -50,6 +50,36 @@ const DEPOIMENTOS = [
     papel: 'Dona de barbearia · MG',
     texto: '“A cobrança da assinatura cai sozinha todo mês. Não preciso mais ficar de olho pra não esquecer de pagar.”',
   },
+  {
+    nome: 'Wesley T.',
+    papel: 'Dono de barbearia · GO',
+    texto: '“Antes eu perdia cliente porque ninguém atendia o WhatsApp na hora. Agora ele marca sozinho a qualquer hora.”',
+  },
+  {
+    nome: 'Camila R.',
+    papel: 'Dona de barbearia · RS',
+    texto: '“O financeiro sozinho já valeu a assinatura. Consigo ver o quanto entrou no mês sem abrir planilha nenhuma.”',
+  },
+  {
+    nome: 'Anderson P.',
+    papel: 'Barbeiro · BA',
+    texto: '“Uso mais pela agenda mesmo. Não corro mais risco de marcar dois clientes no mesmo horário.”',
+  },
+  {
+    nome: 'Larissa F.',
+    papel: 'Dona de barbearia · PR',
+    texto: '“Meus três profissionais têm a própria agenda e eu vejo tudo junto no painel. Ficou bem mais fácil de gerenciar.”',
+  },
+  {
+    nome: 'Thiago N.',
+    papel: 'Barbeiro · PE',
+    texto: '“Antes eu descobria a comissão só no fim do mês, no papel. Agora acompanho dia a dia pelo celular.”',
+  },
+  {
+    nome: 'Juliana K.',
+    papel: 'Dona de barbearia · SC',
+    texto: '“Meus clientes acharam o link de agendamento muito mais prático do que mandar mensagem. Ficou mais profissional.”',
+  },
 ];
 
 export default function Institucional() {
@@ -246,25 +276,27 @@ export default function Institucional() {
       </section>
 
       <section className="nb-section nb-testimonials-section" id="depoimentos">
-        <div className="nb-section-inner">
-          <div className="nb-section-head">
-            <span className="nb-eyebrow">Depoimentos</span>
-            <h2 style={{ color: 'var(--tinta)' }}>Quem já roda com o BarberFlow</h2>
-          </div>
-          <div className="nb-testimonials-grid">
-            {DEPOIMENTOS.map((d) => (
-              <div key={d.nome} className="nb-testimonial-card">
-                <div className="nb-stars">★★★★★</div>
-                <p className="quote">{d.texto}</p>
-                <div className="nb-testimonial-autor">
-                  <div className="nb-testimonial-avatar">{d.nome.charAt(0)}</div>
-                  <div>
-                    <strong>{d.nome}</strong>
-                    <span>{d.papel}</span>
+        <div className="nb-section-head">
+          <span className="nb-eyebrow">Depoimentos</span>
+          <h2 style={{ color: 'var(--tinta)' }}>Quem já roda com o BarberFlow</h2>
+        </div>
+        <div className="nb-testimonials-wrap">
+          <div className="nb-testimonials-track">
+            {Array.from({ length: 2 }).map((_, copia) =>
+              DEPOIMENTOS.map((d) => (
+                <div key={`${copia}-${d.nome}`} className="nb-testimonial-card">
+                  <div className="nb-stars">★★★★★</div>
+                  <p className="quote">{d.texto}</p>
+                  <div className="nb-testimonial-autor">
+                    <div className="nb-testimonial-avatar">{d.nome.charAt(0)}</div>
+                    <div>
+                      <strong>{d.nome}</strong>
+                      <span>{d.papel}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
