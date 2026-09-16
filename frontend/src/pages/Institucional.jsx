@@ -34,6 +34,28 @@ const RECURSOS = [
   },
 ];
 
+const PLANOS = [
+  {
+    nome: 'Básico',
+    preco: 'R$ 69,90',
+    descricao: 'Pra quem trabalha sozinho ou está começando.',
+    recursos: ['1 profissional', 'Agenda completa', 'Cadastro de clientes', 'Cadastro de serviços'],
+  },
+  {
+    nome: 'Profissional',
+    preco: 'R$ 129,90',
+    descricao: 'Pra barbearia que já tem equipe.',
+    recursos: ['Até 5 profissionais', 'Tudo do plano Básico', 'Financeiro completo', 'Comissões automáticas', 'Dashboard com relatórios'],
+    destaque: true,
+  },
+  {
+    nome: 'Premium',
+    preco: 'R$ 199,90',
+    descricao: 'Pra quem quer o sistema completo, sem limites.',
+    recursos: ['Profissionais ilimitados', 'Tudo do plano Profissional', 'Assistente de IA', 'Suporte prioritário'],
+  },
+];
+
 const DEPOIMENTOS = [
   {
     nome: 'Rafael M.',
@@ -93,6 +115,7 @@ export default function Institucional() {
         <div className="nb-nav-links">
           <a href="#recursos">Recursos</a>
           <a href="#como-funciona">Como funciona</a>
+          <a href="#planos">Planos</a>
           <a href="#depoimentos">Depoimentos</a>
         </div>
         <div className="nb-nav-actions">
@@ -245,6 +268,40 @@ export default function Institucional() {
               <h3>Compartilhe seu link</h3>
               <p>Envie o link da sua agenda pública nas redes sociais e comece a receber agendamentos.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="nb-section nb-planos-section" id="planos">
+        <div className="nb-section-inner">
+          <div className="nb-section-head">
+            <span className="nb-eyebrow">Planos</span>
+            <h2>Escolha o plano do tamanho da sua barbearia</h2>
+            <p>Comece grátis por 14 dias em qualquer plano, sem precisar cadastrar cartão.</p>
+          </div>
+          <div className="nb-planos-grid">
+            {PLANOS.map((p) => (
+              <div key={p.nome} className={`nb-plano-card${p.destaque ? ' destaque' : ''}`}>
+                {p.destaque && <span className="nb-plano-selo">Mais escolhido</span>}
+                <h3>{p.nome}</h3>
+                <div className="nb-plano-preco">
+                  {p.preco}<span>/mês</span>
+                </div>
+                <p className="nb-plano-desc">{p.descricao}</p>
+                <ul className="nb-plano-lista">
+                  {p.recursos.map((r) => (
+                    <li key={r}><span className="marca">✓</span> {r}</li>
+                  ))}
+                </ul>
+                <Link
+                  to="/registro"
+                  className={`nb-btn ${p.destaque ? 'nb-btn-primario' : 'nb-btn-secundario'}`}
+                  style={{ width: '100%', justifyContent: 'center' }}
+                >
+                  Testar grátis
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>

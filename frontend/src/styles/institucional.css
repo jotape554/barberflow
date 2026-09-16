@@ -306,6 +306,47 @@
 .nb-how-step h3 { font-size: 1.2rem; margin-bottom: 10px; }
 .nb-how-step p { color: rgba(255,255,255,0.6); font-size: 0.95rem; max-width: 280px; margin: 0 auto; }
 
+/* ---------- Planos ---------- */
+.nb-planos-section { background: var(--nb-dark); color: var(--nb-white); }
+.nb-planos-section .nb-section-head p { color: rgba(255,255,255,0.65); }
+.nb-planos-section .nb-eyebrow { color: var(--latao-suave); }
+.nb-planos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; }
+.nb-plano-card {
+  position: relative;
+  background: rgba(255,255,255,0.04);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nb-plano-card.destaque {
+  background: var(--nb-white);
+  color: var(--nb-border);
+  border-color: var(--nb-accent);
+  box-shadow: 8px 8px 0 0 var(--nb-accent);
+}
+.nb-plano-selo {
+  position: absolute;
+  top: -14px;
+  left: 32px;
+  background: var(--nb-accent);
+  color: var(--nb-white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+.nb-plano-card h3 { font-size: 1.3rem; margin-bottom: 4px; }
+.nb-plano-preco { font-family: var(--fonte-titulo); font-size: 2rem; }
+.nb-plano-preco span { font-family: var(--fonte-corpo); font-size: 0.95rem; opacity: 0.6; }
+.nb-plano-desc { font-size: 0.9rem; opacity: 0.75; margin: 0 0 8px; }
+.nb-plano-lista { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 10px; flex: 1; }
+.nb-plano-lista li { display: flex; gap: 8px; align-items: flex-start; font-size: 0.92rem; }
+.nb-plano-lista .marca { color: var(--verde-navalha); font-weight: 700; flex-shrink: 0; }
+.nb-plano-card.destaque .nb-plano-lista .marca { color: var(--verde-navalha); }
+
 /* ---------- Personas ---------- */
 .nb-personas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .nb-persona-card { border-radius: 20px; padding: 32px; }
@@ -386,7 +427,7 @@
 /* ---------- Responsivo ---------- */
 @media (max-width: 900px) {
   .nb-hero-grid { grid-template-columns: 1fr; }
-  .nb-compare, .nb-features-grid, .nb-how-flow, .nb-personas-grid { grid-template-columns: 1fr; }
+  .nb-compare, .nb-features-grid, .nb-how-flow, .nb-personas-grid, .nb-planos-grid { grid-template-columns: 1fr; }
   .nb-nav-links { display: none; }
   .nb-hero h1 { font-size: 2.4rem; }
   .nb-footer-grid { grid-template-columns: 1fr 1fr; }
