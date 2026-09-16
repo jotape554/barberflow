@@ -19,6 +19,8 @@ import AssistenteIa from './pages/AssistenteIa';
 import Assinatura from './pages/Assinatura';
 import AgendamentoPublico from './pages/public/AgendamentoPublico';
 import Institucional from './pages/Institucional';
+import PoliticaPrivacidade from './pages/legal/PoliticaPrivacidade';
+import TermosDeUso from './pages/legal/TermosDeUso';
 
 function TrialBanner({ status }) {
   if (!status || status.status !== 'TRIAL' || status.diasRestantesTrial == null) return null;
@@ -97,6 +99,8 @@ export default function App() {
           <Route path="/esqueci-senha" element={<EsqueciSenha />} />
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/b/:slug" element={<AgendamentoPublico />} />
+          <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+          <Route path="/termos" element={<TermosDeUso />} />
 
           <Route
             path="/painel"

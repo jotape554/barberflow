@@ -57,6 +57,12 @@ export default function Registro() {
           </button>
         </form>
 
+        <p style={{ fontSize: '0.8rem', color: 'var(--texto-suave)', textAlign: 'center', marginTop: 16 }}>
+          Ao criar sua conta, você concorda com os{' '}
+          <Link to="/termos">Termos de Uso</Link> e a{' '}
+          <Link to="/privacidade">Política de Privacidade</Link>.
+        </p>
+
         <div className="auth-troca">
           Já tem conta? <Link to="/login">Entrar</Link>
         </div>

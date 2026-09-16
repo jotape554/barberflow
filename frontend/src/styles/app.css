@@ -548,3 +548,58 @@ label {
 .chat-form input {
   flex: 1;
 }
+
+.doc-legal {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 24px 96px;
+}
+
+.doc-legal .doc-topo {
+  margin-bottom: 40px;
+}
+
+.doc-legal .doc-topo a {
+  color: var(--latao-forte);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.doc-legal h1 {
+  font-family: var(--fonte-titulo);
+  font-size: 2rem;
+  margin: 16px 0 4px;
+}
+
+.doc-legal .doc-atualizado {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  margin-bottom: 40px;
+}
+
+.doc-legal h2 {
+  font-family: var(--fonte-titulo);
+  font-size: 1.3rem;
+  margin: 40px 0 12px;
+}
+
+.doc-legal p, .doc-legal li {
+  color: var(--texto);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.doc-legal ul {
+  padding-left: 22px;
+}
+
+.doc-legal strong { color: var(--tinta); }
+
+.doc-legal .doc-aviso {
+  background: var(--latao-suave);
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  font-size: 0.92rem;
+}

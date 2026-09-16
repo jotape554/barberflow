@@ -360,7 +360,7 @@
 .nb-footer { background: var(--nb-dark); color: var(--nb-white); padding: 64px 32px 32px; }
 .nb-footer-grid {
   max-width: 1180px; margin: 0 auto 48px;
-  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 32px;
 }
 .nb-footer-brand p { color: rgba(255,255,255,0.6); font-size: 0.9rem; max-width: 280px; margin-top: 12px; }
 .nb-footer-col h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; color: var(--latao-suave); }

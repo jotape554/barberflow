@@ -307,6 +307,13 @@ export default function Institucional() {
               <li><a href="mailto:contato@barberpro.com.br">contato@barberpro.com.br</a></li>
             </ul>
           </div>
+          <div className="nb-footer-col">
+            <h4>Legal</h4>
+            <ul>
+              <li><Link to="/privacidade">Política de Privacidade</Link></li>
+              <li><Link to="/termos">Termos de Uso</Link></li>
+            </ul>
+          </div>
         </div>
         <div className="nb-footer-bottom">
           <span>© {new Date().getFullYear()} BarberPro. Todos os direitos reservados.</span>
