@@ -4,6 +4,7 @@ import com.example.demo.config.StripeConfig;
 import com.example.demo.dto.AssinaturaResponse;
 import com.example.demo.dto.PlanoDisponivelResponse;
 import com.example.demo.enums.PlanoSaas;
+import com.example.demo.enums.Recurso;
 import com.example.demo.enums.StatusAssinaturaSaas;
 import com.example.demo.exception.RecursoNaoEncontradoException;
 import com.example.demo.exception.RegraDeNegocioException;
@@ -142,6 +143,22 @@ public class AssinaturaService {
             return fimTrial != null && !LocalDate.now().isAfter(fimTrial);
         }
         return false;
+    }
+
+    /**
+     * Durante o trial, libera todos os recursos pra barbearia poder explorar o sistema por
+     * inteiro antes de decidir o plano. Depois que assina de verdade (ATIVA), passa a valer
+     * o recorte real do plano contratado. Sem assinatura válida, o AssinaturaGateFilter já
+     * bloqueia o painel inteiro antes disso ser sequer avaliado.
+     */
+    public boolean recursoLiberado(Barbearia barbearia, Recurso recurso) {
+        if (barbearia.getStatusAssinaturaSaas() == StatusAssinaturaSaas.TRIAL) {
+            return acessoLiberado(barbearia);
+        }
+        if (barbearia.getStatusAssinaturaSaas() != StatusAssinaturaSaas.ATIVA) {
+            return false;
+        }
+        return barbearia.getPlanoSaas().atendeNivelMinimo(recurso.getPlanoMinimo());
     }
 
     private String garantirCustomerId(Barbearia barbearia) throws StripeException {

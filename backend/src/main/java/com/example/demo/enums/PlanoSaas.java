@@ -11,9 +11,9 @@ import java.math.BigDecimal;
  */
 @Getter
 public enum PlanoSaas {
-    BASICO(new BigDecimal("69.90"), "1 profissional, agenda e financeiro básico", 1),
-    PROFISSIONAL(new BigDecimal("129.90"), "Até 5 profissionais, agendamento público e comissões", 5),
-    PREMIUM(new BigDecimal("199.90"), "Profissionais ilimitados e suporte prioritário", null);
+    BASICO(new BigDecimal("69.90"), "1 profissional, agenda, clientes e serviços", 1),
+    PROFISSIONAL(new BigDecimal("129.90"), "Até 5 profissionais, financeiro completo, comissões e dashboard", 5),
+    PREMIUM(new BigDecimal("199.90"), "Profissionais ilimitados, recursos avançados e suporte prioritário", null);
 
     private final BigDecimal precoMensal;
     private final String descricao;
@@ -24,5 +24,13 @@ public enum PlanoSaas {
         this.precoMensal = precoMensal;
         this.descricao = descricao;
         this.limiteProfissionais = limiteProfissionais;
+    }
+
+    /**
+     * Os planos são cumulativos por ordem de declaração (BASICO < PROFISSIONAL < PREMIUM):
+     * quem está num plano mais alto automaticamente atende os requisitos dos planos abaixo.
+     */
+    public boolean atendeNivelMinimo(PlanoSaas minimo) {
+        return this.ordinal() >= minimo.ordinal();
     }
 }

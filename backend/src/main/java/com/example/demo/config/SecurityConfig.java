@@ -3,6 +3,7 @@ package com.example.demo.config;
 import com.example.demo.security.AssinaturaGateFilter;
 import com.example.demo.security.CustomUserDetailsService;
 import com.example.demo.security.JwtAuthFilter;
+import com.example.demo.security.RecursoGateFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
     private final AssinaturaGateFilter assinaturaGateFilter;
+    private final RecursoGateFilter recursoGateFilter;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -83,7 +85,8 @@ public class SecurityConfig {
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(assinaturaGateFilter, JwtAuthFilter.class);
+            .addFilterAfter(assinaturaGateFilter, JwtAuthFilter.class)
+            .addFilterAfter(recursoGateFilter, AssinaturaGateFilter.class);
 
         return http.build();
     }

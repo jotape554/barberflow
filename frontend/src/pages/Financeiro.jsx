@@ -3,6 +3,7 @@ import { api } from '../api/http';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import EstadoVazio from '../components/EstadoVazio';
+import RecursoBloqueado from '../components/RecursoBloqueado';
 
 function formatarMoeda(valor) {
   return Number(valor ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -26,6 +27,7 @@ export default function Financeiro() {
   const [comissoes, setComissoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const [bloqueioFinanceiro, setBloqueioFinanceiro] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
   const [formDespesa, setFormDespesa] = useState(DESPESA_VAZIA);
 
@@ -33,19 +35,25 @@ export default function Financeiro() {
 
   function carregar() {
     setCarregando(true);
+    setBloqueioFinanceiro(null);
 
-    // Profissional não tem permissão pra ver receitas/despesas da barbearia toda —
-    // só a própria comissão.
-    const pedidos = ehProfissional
-      ? [Promise.resolve([]), Promise.resolve([]), api.get('/api/comissoes')]
-      : [api.get('/api/receitas'), api.get('/api/despesas'), api.get('/api/comissoes')];
+    // Comissão continua liberada em qualquer plano; receitas/despesas exigem plano
+    // Profissional ou superior — por isso são pedidas separadamente.
+    const pedidoComissoes = api.get('/api/comissoes').then(setComissoes);
 
-    Promise.all(pedidos)
-      .then(([r, d, c]) => {
-        setReceitas(r);
-        setDespesas(d);
-        setComissoes(c);
-      })
+    const pedidoFinanceiro = ehProfissional
+      ? Promise.resolve()
+      : Promise.all([api.get('/api/receitas'), api.get('/api/despesas')])
+          .then(([r, d]) => {
+            setReceitas(r);
+            setDespesas(d);
+          })
+          .catch((e) => {
+            if (e.dados?.upgradeNecessario) setBloqueioFinanceiro(e.dados);
+            else throw e;
+          });
+
+    Promise.all([pedidoComissoes, pedidoFinanceiro])
       .catch((e) => setErro(e.message))
       .finally(() => setCarregando(false));
   }
@@ -87,7 +95,7 @@ export default function Financeiro() {
           <h2>Financeiro</h2>
           <p>Receitas geradas pelos atendimentos, despesas e comissões.</p>
         </div>
-        {aba === 'despesas' && (
+        {aba === 'despesas' && !bloqueioFinanceiro && (
           <button className="btn btn-latao" onClick={abrirNovaDespesa}>Nova despesa</button>
         )}
       </div>
@@ -106,6 +114,9 @@ export default function Financeiro() {
         ))}
       </div>
 
+      {bloqueioFinanceiro && (aba === 'receitas' || aba === 'despesas') ? (
+        <RecursoBloqueado planoNecessario={bloqueioFinanceiro.planoNecessario} mensagem={bloqueioFinanceiro.mensagem} />
+      ) : (
       <div className="panel">
         {carregando ? (
           <p style={{ padding: 20 }}>Carregando...</p>
@@ -179,6 +190,7 @@ export default function Financeiro() {
           </table>
         )}
       </div>
+      )}
 
       {modalAberto && (
         <Modal titulo="Nova despesa" onFechar={() => setModalAberto(false)}>

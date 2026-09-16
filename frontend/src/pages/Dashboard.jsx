@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/http';
+import RecursoBloqueado from '../components/RecursoBloqueado';
 
 function formatarMoeda(valor) {
   return (valor ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -9,11 +10,15 @@ export default function Dashboard() {
   const [dados, setDados] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const [bloqueio, setBloqueio] = useState(null);
 
   useEffect(() => {
     api.get('/api/dashboard')
       .then(setDados)
-      .catch((e) => setErro(e.message))
+      .catch((e) => {
+        if (e.dados?.upgradeNecessario) setBloqueio(e.dados);
+        else setErro(e.message);
+      })
       .finally(() => setCarregando(false));
   }, []);
 
@@ -28,6 +33,8 @@ export default function Dashboard() {
 
       {erro && <div className="erro">{erro}</div>}
       {carregando && <p>Carregando...</p>}
+
+      {bloqueio && <RecursoBloqueado planoNecessario={bloqueio.planoNecessario} mensagem={bloqueio.mensagem} />}
 
       {dados && (
         <div className="cards-grid">
