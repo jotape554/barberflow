@@ -11,6 +11,9 @@ const ITENS = [
   { to: '/painel/assinatura', label: 'Assinatura', icone: '◆' },
 ];
 
+/** Profissional só enxerga a própria agenda e a própria comissão — o resto é coisa de dono/gerente. */
+const ITENS_PROFISSIONAL = ['/painel/agenda', '/painel/financeiro'];
+
 function iniciais(nome) {
   if (!nome) return '?';
   const partes = nome.trim().split(/\s+/);
@@ -26,11 +29,15 @@ export default function Sidebar() {
     navigate('/login');
   }
 
+  const itens = usuario?.papel === 'PROFISSIONAL'
+    ? ITENS.filter((item) => ITENS_PROFISSIONAL.includes(item.to))
+    : ITENS;
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">Barber<span>Pro</span></div>
       <nav>
-        {ITENS.map((item) => (
+        {itens.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

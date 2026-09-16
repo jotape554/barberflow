@@ -26,11 +26,13 @@ public class ServicoController {
         return servicoService.buscar(id);
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','GERENTE')")
     @PostMapping
     public ResponseEntity<Servico> criar(@RequestBody Servico servico) {
         return ResponseEntity.ok(servicoService.criar(servico));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','GERENTE')")
     @PutMapping("/{id}")
     public Servico atualizar(@PathVariable Long id, @RequestBody Servico servico) {
         return servicoService.atualizar(id, servico);

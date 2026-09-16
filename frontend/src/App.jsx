@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import { api } from './api/http';
@@ -51,6 +51,7 @@ function TrialBanner({ status }) {
 function PainelLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { usuario } = useAuth();
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
@@ -63,6 +64,13 @@ function PainelLayout() {
       })
       .catch(() => {});
   }, [location.pathname]);
+
+  // Profissional não tem acesso ao painel geral (dashboard) da barbearia — só à própria agenda.
+  useEffect(() => {
+    if (usuario?.papel === 'PROFISSIONAL' && location.pathname === '/painel') {
+      navigate('/painel/agenda', { replace: true });
+    }
+  }, [usuario, location.pathname]);
 
   return (
     <div className="app-shell">

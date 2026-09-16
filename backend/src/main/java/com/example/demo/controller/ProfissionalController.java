@@ -28,11 +28,13 @@ public class ProfissionalController {
         return profissionalService.buscar(id);
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','GERENTE')")
     @PostMapping
     public ResponseEntity<Profissional> criar(@RequestBody Profissional profissional) {
         return ResponseEntity.ok(profissionalService.criar(profissional));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','GERENTE')")
     @PutMapping("/{id}")
     public Profissional atualizar(@PathVariable Long id, @RequestBody Profissional profissional) {
         return profissionalService.atualizar(id, profissional);

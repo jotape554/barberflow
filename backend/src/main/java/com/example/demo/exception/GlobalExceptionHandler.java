@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,6 +40,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RegraDeNegocioException.class)
     public ResponseEntity<Map<String, Object>> handleRegraNegocio(RegraDeNegocioException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(corpo(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    /**
+     * Sem isso, um @PreAuthorize barrando o acesso (ex.: profissional tentando ver o
+     * financeiro da barbearia) caía no handler genérico abaixo e virava erro 500 —
+     * escondendo que na verdade é só "acesso negado" (403).
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAcessoNegado(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(corpo(HttpStatus.FORBIDDEN, "Você não tem permissão para acessar este recurso."));
     }
 
     @ExceptionHandler(BadCredentialsException.class)

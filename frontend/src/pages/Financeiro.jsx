@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/http';
+import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import EstadoVazio from '../components/EstadoVazio';
 
@@ -16,7 +17,10 @@ const ABAS = [
 const DESPESA_VAZIA = { descricao: '', categoria: '', valor: '', data: '', observacao: '' };
 
 export default function Financeiro() {
-  const [aba, setAba] = useState('receitas');
+  const { usuario } = useAuth();
+  const ehProfissional = usuario?.papel === 'PROFISSIONAL';
+
+  const [aba, setAba] = useState(ehProfissional ? 'comissoes' : 'receitas');
   const [receitas, setReceitas] = useState([]);
   const [despesas, setDespesas] = useState([]);
   const [comissoes, setComissoes] = useState([]);
@@ -25,13 +29,18 @@ export default function Financeiro() {
   const [modalAberto, setModalAberto] = useState(false);
   const [formDespesa, setFormDespesa] = useState(DESPESA_VAZIA);
 
+  const abas = ehProfissional ? ABAS.filter((a) => a.id === 'comissoes') : ABAS;
+
   function carregar() {
     setCarregando(true);
-    Promise.all([
-      api.get('/api/receitas'),
-      api.get('/api/despesas'),
-      api.get('/api/comissoes'),
-    ])
+
+    // Profissional não tem permissão pra ver receitas/despesas da barbearia toda —
+    // só a própria comissão.
+    const pedidos = ehProfissional
+      ? [Promise.resolve([]), Promise.resolve([]), api.get('/api/comissoes')]
+      : [api.get('/api/receitas'), api.get('/api/despesas'), api.get('/api/comissoes')];
+
+    Promise.all(pedidos)
       .then(([r, d, c]) => {
         setReceitas(r);
         setDespesas(d);
@@ -86,7 +95,7 @@ export default function Financeiro() {
       {erro && <div className="erro">{erro}</div>}
 
       <div className="abas" style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {ABAS.map((a) => (
+        {abas.map((a) => (
           <button
             key={a.id}
             className={aba === a.id ? 'btn btn-latao' : 'btn btn-secundario'}

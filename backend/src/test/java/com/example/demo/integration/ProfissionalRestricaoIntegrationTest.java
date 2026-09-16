@@ -188,6 +188,39 @@ class ProfissionalRestricaoIntegrationTest {
     }
 
     @Test
+    void profissionalNaoAcessaDashboardNemFinanceiroDaBarbeariaNemEditaCadastros() throws Exception {
+        String tokenAdmin = registrarBarbeariaEObterToken("dono-restricoes@teste.com");
+        Long servicoId = criarServico(tokenAdmin);
+        Long carlosId = criarProfissional(tokenAdmin, "Carlos");
+        Long brunoId = criarProfissional(tokenAdmin, "Bruno");
+
+        String tokenCarlos = criarAcessoELogar(tokenAdmin, carlosId, "carlos6@teste.com");
+
+        mockMvc.perform(get("/api/dashboard").header("Authorization", "Bearer " + tokenCarlos))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/receitas").header("Authorization", "Bearer " + tokenCarlos))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/despesas").header("Authorization", "Bearer " + tokenCarlos))
+                .andExpect(status().isForbidden());
+
+        // não pode editar o cadastro de um colega nem do catálogo de serviços
+        mockMvc.perform(put("/api/profissionais/{id}", brunoId)
+                        .header("Authorization", "Bearer " + tokenCarlos)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Bruno Hackeado\",\"percentualComissao\":99,\"ativo\":true}"))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(put("/api/servicos/{id}", servicoId)
+                        .header("Authorization", "Bearer " + tokenCarlos)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Corte\",\"preco\":999.00,\"duracaoMinutos\":30,\"ativo\":true}"))
+                .andExpect(status().isForbidden());
+
+        // mas continua conseguindo ver clientes/serviços/profissionais pra montar a própria agenda
+        mockMvc.perform(get("/api/servicos").header("Authorization", "Bearer " + tokenCarlos))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void naoDeixaCriarDoisAcessosParaOMesmoProfissional() throws Exception {
         String tokenAdmin = registrarBarbeariaEObterToken("dono-duplo@teste.com");
         Long carlosId = criarProfissional(tokenAdmin, "Carlos");
