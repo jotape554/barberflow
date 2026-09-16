@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import com.example.demo.enums.PlanoSaas;
 import com.example.demo.enums.StatusAssinaturaSaas;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,8 +47,15 @@ public class Barbearia {
     /** Fim do período de teste gratuito. Após essa data, sem status ATIVA, o acesso ao painel é bloqueado. */
     private LocalDate dataFimTrial;
 
-    /** Preenchidos após o primeiro checkout na Stripe — usados para reconciliar os eventos do webhook. */
+    /**
+     * Preenchidos após o primeiro checkout na Stripe — usados para reconciliar os eventos do
+     * webhook. Nunca devem sair pro cliente: Barbearia aparece aninhada em respostas de
+     * Cliente/Serviço/Profissional/Agendamento/etc., então isso vazaria pra qualquer usuário
+     * autenticado sem necessidade nenhuma.
+     */
+    @JsonIgnore
     private String stripeCustomerId;
+    @JsonIgnore
     private String stripeSubscriptionId;
 
     @Builder.Default

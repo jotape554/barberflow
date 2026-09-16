@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class EsqueciSenhaRequest {
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Informe um e-mail.")
+    @Email(message = "Informe um e-mail válido.")
     private String email;
 }

@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class RedefinirSenhaRequest {
 
-    @NotBlank
+    @NotBlank(message = "Link inválido.")
     private String token;
 
-    @NotBlank
+    @NotBlank(message = "Informe a nova senha.")
     private String novaSenha;
 }

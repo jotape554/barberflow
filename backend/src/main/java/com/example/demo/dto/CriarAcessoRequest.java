@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class CriarAcessoRequest {
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Informe um e-mail.")
+    @Email(message = "Informe um e-mail válido.")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Informe uma senha.")
     private String senha;
 }

@@ -8,16 +8,16 @@ import lombok.Data;
 @Data
 public class RegistroRequest {
 
-    @NotBlank
+    @NotBlank(message = "Informe o nome da barbearia.")
     private String nomeBarbearia;
 
-    @NotBlank
+    @NotBlank(message = "Informe seu nome.")
     private String nomeAdmin;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Informe um e-mail.")
+    @Email(message = "Informe um e-mail válido.")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Informe uma senha.")
     private String senha;
 }

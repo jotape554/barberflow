@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -58,10 +60,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(corpo(HttpStatus.UNAUTHORIZED, "E-mail ou senha inválidos"));
     }
 
+    /** Erros de @Valid nos formulários (campo obrigatório, e-mail inválido, etc.) — 400, não 500. */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidacao(MethodArgumentNotValidException ex) {
+        String mensagem = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(FieldError::getDefaultMessage)
+                .orElse("Dados inválidos.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(corpo(HttpStatus.BAD_REQUEST, mensagem));
+    }
+
+    /**
+     * Último recurso. O detalhe técnico (ex.getMessage()) vai só pro log — nunca pro cliente,
+     * pra não vazar nomes de classe/mensagens internas do banco na tela do usuário.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenerico(Exception ex) {
         log.error("Erro interno não tratado", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(corpo(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno: " + ex.getMessage()));
+                .body(corpo(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno. Tente novamente em instantes."));
     }
 }

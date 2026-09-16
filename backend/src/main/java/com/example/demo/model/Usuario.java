@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import com.example.demo.enums.Papel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,7 @@ public class Usuario {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String senhaHash;
 
     @Enumerated(EnumType.STRING)
@@ -45,6 +47,7 @@ public class Usuario {
     private boolean ativo = true;
 
     /** Preenchidos só durante um pedido de "esqueci minha senha" em andamento. */
+    @JsonIgnore
     private String resetSenhaToken;
     private Instant resetSenhaExpiraEm;
 }
