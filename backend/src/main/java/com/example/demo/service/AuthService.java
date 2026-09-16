@@ -71,6 +71,7 @@ public class AuthService {
         return new AuthResponse(token, admin.getNome(), admin.getPapel().name(), barbearia.getId(), barbearia.getSlug(), null);
     }
 
+    @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest req) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getEmail(), req.getSenha()));

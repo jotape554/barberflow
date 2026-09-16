@@ -96,6 +96,8 @@ class ProfissionalRestricaoIntegrationTest {
                         .content("{\"email\":\"%s\",\"senha\":\"123456\"}".formatted(email)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.papel").value("PROFISSIONAL"))
+                .andExpect(jsonPath("$.barbeariaId").isNotEmpty())
+                .andExpect(jsonPath("$.barbeariaSlug").isNotEmpty())
                 .andReturn();
         return objectMapper.readTree(login.getResponse().getContentAsString()).get("token").asText();
     }
