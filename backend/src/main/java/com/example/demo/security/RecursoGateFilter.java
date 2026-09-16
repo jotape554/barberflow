@@ -39,6 +39,7 @@ public class RecursoGateFilter extends OncePerRequestFilter {
             "/api/receitas", Recurso.FINANCEIRO,
             "/api/despesas", Recurso.FINANCEIRO,
             "/api/comissoes", Recurso.COMISSOES,
+            "/api/relatorios", Recurso.RELATORIOS,
             "/api/assistente", Recurso.ASSISTENTE_IA
     );
 

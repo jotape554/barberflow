@@ -10,13 +10,27 @@ function formatarMoeda(valor) {
   return Number(valor ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+const FORMAS_PAGAMENTO = ['DINHEIRO', 'PIX', 'DEBITO', 'CREDITO', 'OUTRO'];
+
 const ABAS = [
   { id: 'receitas', label: 'Receitas' },
   { id: 'despesas', label: 'Despesas' },
   { id: 'comissoes', label: 'Comissões' },
+  { id: 'relatorios', label: 'Relatórios' },
 ];
 
 const DESPESA_VAZIA = { descricao: '', categoria: '', valor: '', data: '', observacao: '' };
+
+function primeiroDiaDoMes() {
+  const hoje = new Date();
+  return new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().slice(0, 10);
+}
+
+function hojeISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+const FILTRO_VAZIO = { dataInicio: primeiroDiaDoMes(), dataFim: hojeISO(), profissionalId: '', servicoId: '', formaPagamento: '' };
 
 export default function Financeiro() {
   const { usuario } = useAuth();
@@ -32,6 +46,13 @@ export default function Financeiro() {
   const [modalAberto, setModalAberto] = useState(false);
   const [formDespesa, setFormDespesa] = useState(DESPESA_VAZIA);
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const [profissionais, setProfissionais] = useState([]);
+  const [servicos, setServicos] = useState([]);
+  const [filtroRelatorio, setFiltroRelatorio] = useState(FILTRO_VAZIO);
+  const [relatorio, setRelatorio] = useState(null);
+  const [carregandoRelatorio, setCarregandoRelatorio] = useState(false);
+  const [erroRelatorio, setErroRelatorio] = useState('');
 
   const abas = ehProfissional ? ABAS.filter((a) => a.id === 'comissoes') : ABAS;
 
@@ -75,6 +96,40 @@ export default function Financeiro() {
 
   useEffect(carregar, []);
 
+  useEffect(() => {
+    if (ehProfissional) return;
+    api.get('/api/profissionais').then(setProfissionais).catch(() => {});
+    api.get('/api/servicos').then(setServicos).catch(() => {});
+  }, [ehProfissional]);
+
+  async function gerarRelatorio(e) {
+    e?.preventDefault();
+    setErroRelatorio('');
+    setCarregandoRelatorio(true);
+    try {
+      const params = new URLSearchParams({
+        dataInicio: filtroRelatorio.dataInicio,
+        dataFim: filtroRelatorio.dataFim,
+      });
+      if (filtroRelatorio.profissionalId) params.set('profissionalId', filtroRelatorio.profissionalId);
+      if (filtroRelatorio.servicoId) params.set('servicoId', filtroRelatorio.servicoId);
+      if (filtroRelatorio.formaPagamento) params.set('formaPagamento', filtroRelatorio.formaPagamento);
+      const resposta = await api.get(`/api/relatorios?${params.toString()}`);
+      setRelatorio(resposta);
+    } catch (err) {
+      setErroRelatorio(err.message);
+    } finally {
+      setCarregandoRelatorio(false);
+    }
+  }
+
+  useEffect(() => {
+    if (aba === 'relatorios' && !relatorio && !ehProfissional && !bloqueio) {
+      gerarRelatorio();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aba, bloqueio]);
+
   function abrirNovaDespesa() {
     setFormDespesa({ ...DESPESA_VAZIA, data: new Date().toISOString().slice(0, 10) });
     setErro('');
@@ -102,6 +157,10 @@ export default function Financeiro() {
     await api.patch(`/api/comissoes/${comissao.id}/pagar`);
     carregar();
   }
+
+  const totalComissao = comissoes.reduce((acc, c) => acc + Number(c.valor), 0);
+  const comissaoPaga = comissoes.filter((c) => c.paga).reduce((acc, c) => acc + Number(c.valor), 0);
+  const comissaoPendente = totalComissao - comissaoPaga;
 
   return (
     <div>
@@ -131,7 +190,119 @@ export default function Financeiro() {
 
       {bloqueio ? (
         <RecursoBloqueado planoNecessario={bloqueio.planoNecessario} mensagem={bloqueio.mensagem} />
+      ) : aba === 'relatorios' ? (
+        <div>
+          <div className="panel" style={{ padding: 20, marginBottom: 20 }}>
+            <form onSubmit={gerarRelatorio} className="form-grid" style={{ alignItems: 'end' }}>
+              <div className="campo">
+                <label>De</label>
+                <input type="date" value={filtroRelatorio.dataInicio}
+                  onChange={(e) => setFiltroRelatorio({ ...filtroRelatorio, dataInicio: e.target.value })} required />
+              </div>
+              <div className="campo">
+                <label>Até</label>
+                <input type="date" value={filtroRelatorio.dataFim}
+                  onChange={(e) => setFiltroRelatorio({ ...filtroRelatorio, dataFim: e.target.value })} required />
+              </div>
+              <div className="campo">
+                <label>Profissional</label>
+                <select value={filtroRelatorio.profissionalId}
+                  onChange={(e) => setFiltroRelatorio({ ...filtroRelatorio, profissionalId: e.target.value })}>
+                  <option value="">Todos</option>
+                  {profissionais.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
+                </select>
+              </div>
+              <div className="campo">
+                <label>Serviço</label>
+                <select value={filtroRelatorio.servicoId}
+                  onChange={(e) => setFiltroRelatorio({ ...filtroRelatorio, servicoId: e.target.value })}>
+                  <option value="">Todos</option>
+                  {servicos.map((s) => <option key={s.id} value={s.id}>{s.nome}</option>)}
+                </select>
+              </div>
+              <div className="campo">
+                <label>Forma de pagamento</label>
+                <select value={filtroRelatorio.formaPagamento}
+                  onChange={(e) => setFiltroRelatorio({ ...filtroRelatorio, formaPagamento: e.target.value })}>
+                  <option value="">Todas</option>
+                  {FORMAS_PAGAMENTO.map((f) => <option key={f} value={f}>{f}</option>)}
+                </select>
+              </div>
+              <div className="campo">
+                <button className="btn btn-latao" disabled={carregandoRelatorio}>
+                  {carregandoRelatorio ? 'Gerando...' : 'Gerar relatório'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {erroRelatorio && <div className="erro">{erroRelatorio}</div>}
+
+          {relatorio && (
+            <>
+              <div className="cards-grid" style={{ marginBottom: 20 }}>
+                <div className="metric-card">
+                  <div className="rotulo">Faturamento bruto</div>
+                  <div className="valor">{formatarMoeda(relatorio.faturamentoBruto)}</div>
+                </div>
+                <div className="metric-card">
+                  <div className="rotulo">Despesas</div>
+                  <div className="valor">{formatarMoeda(relatorio.totalDespesas)}</div>
+                </div>
+                <div className="metric-card">
+                  <div className="rotulo">Comissões</div>
+                  <div className="valor">{formatarMoeda(relatorio.totalComissoes)}</div>
+                </div>
+                <div className="metric-card">
+                  <div className="rotulo">Resultado líquido (estimado)</div>
+                  <div className="valor">{formatarMoeda(relatorio.resultadoLiquido)}</div>
+                </div>
+              </div>
+
+              <div className="panel">
+                {relatorio.receitas.length === 0 ? (
+                  <EstadoVazio mensagem="Nenhuma receita encontrada com esses filtros." />
+                ) : (
+                  <table>
+                    <thead>
+                      <tr><th>Data</th><th>Cliente</th><th>Profissional</th><th>Serviço</th><th>Forma</th><th>Valor</th></tr>
+                    </thead>
+                    <tbody>
+                      {relatorio.receitas.map((r) => (
+                        <tr key={r.id}>
+                          <td>{r.data}</td>
+                          <td>{r.cliente?.nome || '—'}</td>
+                          <td>{r.profissional?.nome || '—'}</td>
+                          <td>{r.servico?.nome || '—'}</td>
+                          <td>{r.formaPagamento}</td>
+                          <td>{formatarMoeda(r.valor)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       ) : (
+      <div>
+        {aba === 'comissoes' && !carregando && (
+          <div className="cards-grid" style={{ marginBottom: 20 }}>
+            <div className="metric-card">
+              <div className="rotulo">Comissão total</div>
+              <div className="valor">{formatarMoeda(totalComissao)}</div>
+            </div>
+            <div className="metric-card">
+              <div className="rotulo">Comissão paga</div>
+              <div className="valor">{formatarMoeda(comissaoPaga)}</div>
+            </div>
+            <div className="metric-card">
+              <div className="rotulo">Comissão pendente</div>
+              <div className="valor">{formatarMoeda(comissaoPendente)}</div>
+            </div>
+          </div>
+        )}
       <div className="panel">
         {carregando ? (
           <p style={{ padding: 20 }}>Carregando...</p>
@@ -204,6 +375,7 @@ export default function Financeiro() {
             </tbody>
           </table>
         )}
+      </div>
       </div>
       )}
 
