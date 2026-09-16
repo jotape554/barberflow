@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface ProfissionalRepository extends JpaRepository<Profissional, Long> {
     List<Profissional> findAllByBarbeariaId(Long barbeariaId);
     Optional<Profissional> findByIdAndBarbeariaId(Long id, Long barbeariaId);
+    long countByBarbeariaId(Long barbeariaId);
 }

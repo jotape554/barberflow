@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.enums.Papel;
+import com.example.demo.enums.StatusAssinaturaSaas;
 import com.example.demo.exception.RecursoNaoEncontradoException;
 import com.example.demo.exception.RegraDeNegocioException;
 import com.example.demo.model.Barbearia;
@@ -39,6 +40,18 @@ public class ProfissionalService {
         Long barbeariaId = SecurityUtils.barbeariaAtualId();
         Barbearia barbearia = barbeariaRepository.findById(barbeariaId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Barbearia não encontrada"));
+
+        // O limite só vale depois que a barbearia assina um plano de verdade — durante o
+        // período de teste grátis ela pode explorar o sistema sem essa restrição.
+        Integer limite = barbearia.getPlanoSaas().getLimiteProfissionais();
+        if (barbearia.getStatusAssinaturaSaas() == StatusAssinaturaSaas.ATIVA
+                && limite != null && profissionalRepository.countByBarbeariaId(barbeariaId) >= limite) {
+            throw new RegraDeNegocioException(
+                    "Seu plano atual (" + barbearia.getPlanoSaas() + ") permite no máximo " + limite +
+                    (limite == 1 ? " profissional." : " profissionais.") +
+                    " Faça upgrade do plano para cadastrar mais.");
+        }
+
         profissional.setId(null);
         profissional.setBarbearia(barbearia);
         return profissionalRepository.save(profissional);

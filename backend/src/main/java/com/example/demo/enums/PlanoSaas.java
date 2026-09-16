@@ -11,15 +11,18 @@ import java.math.BigDecimal;
  */
 @Getter
 public enum PlanoSaas {
-    BASICO(new BigDecimal("69.90"), "1 profissional, agenda e financeiro básico"),
-    PROFISSIONAL(new BigDecimal("129.90"), "Até 5 profissionais, agendamento público e comissões"),
-    PREMIUM(new BigDecimal("199.90"), "Profissionais ilimitados e suporte prioritário");
+    BASICO(new BigDecimal("69.90"), "1 profissional, agenda e financeiro básico", 1),
+    PROFISSIONAL(new BigDecimal("129.90"), "Até 5 profissionais, agendamento público e comissões", 5),
+    PREMIUM(new BigDecimal("199.90"), "Profissionais ilimitados e suporte prioritário", null);
 
     private final BigDecimal precoMensal;
     private final String descricao;
+    /** Número máximo de profissionais que a barbearia pode cadastrar neste plano; null = sem limite. */
+    private final Integer limiteProfissionais;
 
-    PlanoSaas(BigDecimal precoMensal, String descricao) {
+    PlanoSaas(BigDecimal precoMensal, String descricao, Integer limiteProfissionais) {
         this.precoMensal = precoMensal;
         this.descricao = descricao;
+        this.limiteProfissionais = limiteProfissionais;
     }
 }
