@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Despesa;
 import com.example.demo.service.DespesaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,12 +29,12 @@ public class DespesaController {
     }
 
     @PostMapping
-    public ResponseEntity<Despesa> criar(@RequestBody Despesa despesa) {
+    public ResponseEntity<Despesa> criar(@Valid @RequestBody Despesa despesa) {
         return ResponseEntity.ok(despesaService.criar(despesa));
     }
 
     @PutMapping("/{id}")
-    public Despesa atualizar(@PathVariable Long id, @RequestBody Despesa despesa) {
+    public Despesa atualizar(@PathVariable Long id, @Valid @RequestBody Despesa despesa) {
         return despesaService.atualizar(id, despesa);
     }
 

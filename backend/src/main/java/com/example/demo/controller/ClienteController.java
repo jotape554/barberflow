@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Cliente;
 import com.example.demo.service.ClienteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,12 +38,12 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> criar(@RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> criar(@Valid @RequestBody Cliente cliente) {
         return ResponseEntity.ok(clienteService.criar(cliente));
     }
 
     @PutMapping("/{id}")
-    public Cliente atualizar(@PathVariable Long id, @RequestBody Cliente cliente) {
+    public Cliente atualizar(@PathVariable Long id, @Valid @RequestBody Cliente cliente) {
         return clienteService.atualizar(id, cliente);
     }
 

@@ -223,6 +223,53 @@ class ProfissionalRestricaoIntegrationTest {
     }
 
     @Test
+    void profissionalNaoVeTelefoneEmailNemComissaoDeColegaMasVeOsProprios() throws Exception {
+        String tokenAdmin = registrarBarbeariaEObterToken("dono-dados-sensiveis@teste.com");
+        Long carlosId = criarProfissional(tokenAdmin, "Carlos");
+        Long brunoId = criarProfissional(tokenAdmin, "Bruno");
+
+        mockMvc.perform(put("/api/profissionais/{id}", carlosId)
+                        .header("Authorization", "Bearer " + tokenAdmin)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Carlos\",\"telefone\":\"11911112222\",\"email\":\"carlos@teste.com\",\"percentualComissao\":40,\"ativo\":true}"))
+                .andExpect(status().isOk());
+
+        String tokenCarlos = criarAcessoELogar(tokenAdmin, carlosId, "carlos7@teste.com");
+
+        MvcResult resultado = mockMvc.perform(get("/api/profissionais").header("Authorization", "Bearer " + tokenCarlos))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode lista = objectMapper.readTree(resultado.getResponse().getContentAsString());
+
+        JsonNode dadosCarlos = null;
+        JsonNode dadosBruno = null;
+        for (JsonNode item : lista) {
+            if (item.get("id").asLong() == carlosId) dadosCarlos = item;
+            if (item.get("id").asLong() == brunoId) dadosBruno = item;
+        }
+
+        assertThat(dadosCarlos.get("telefone").asText()).isEqualTo("11911112222");
+        assertThat(dadosCarlos.get("email").asText()).isEqualTo("carlos@teste.com");
+        assertThat(dadosCarlos.get("percentualComissao").asDouble()).isEqualTo(40.0);
+
+        assertThat(dadosBruno.get("telefone").isNull()).isTrue();
+        assertThat(dadosBruno.get("email").isNull()).isTrue();
+        assertThat(dadosBruno.get("percentualComissao").isNull()).isTrue();
+        assertThat(dadosBruno.get("nome").asText()).isEqualTo("Bruno");
+
+        // admin continua vendo tudo de todo mundo
+        MvcResult resultadoAdmin = mockMvc.perform(get("/api/profissionais").header("Authorization", "Bearer " + tokenAdmin))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode listaAdmin = objectMapper.readTree(resultadoAdmin.getResponse().getContentAsString());
+        for (JsonNode item : listaAdmin) {
+            if (item.get("id").asLong() == brunoId) {
+                assertThat(item.get("percentualComissao").isNull()).isFalse();
+            }
+        }
+    }
+
+    @Test
     void naoDeixaCriarDoisAcessosParaOMesmoProfissional() throws Exception {
         String tokenAdmin = registrarBarbeariaEObterToken("dono-duplo@teste.com");
         Long carlosId = criarProfissional(tokenAdmin, "Carlos");

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.ProfissionalResponse;
 import com.example.demo.enums.Papel;
 import com.example.demo.enums.StatusAssinaturaSaas;
 import com.example.demo.exception.RecursoNaoEncontradoException;
@@ -27,11 +28,38 @@ public class ProfissionalService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public List<Profissional> listar() {
-        return profissionalRepository.findAllByBarbeariaId(SecurityUtils.barbeariaAtualId());
+    /**
+     * Um profissional nunca vê telefone/e-mail/% de comissão dos colegas — só os próprios.
+     * Dono/gerente sempre vê tudo.
+     */
+    public List<ProfissionalResponse> listar() {
+        return profissionalRepository.findAllByBarbeariaId(SecurityUtils.barbeariaAtualId()).stream()
+                .map(this::paraResponse)
+                .toList();
     }
 
-    public Profissional buscar(Long id) {
+    public ProfissionalResponse buscar(Long id) {
+        return paraResponse(buscarEntidade(id));
+    }
+
+    private ProfissionalResponse paraResponse(Profissional p) {
+        boolean ocultarSensiveis = SecurityUtils.isProfissional() && !p.getId().equals(SecurityUtils.profissionalAtualId());
+        return ProfissionalResponse.builder()
+                .id(p.getId())
+                .nome(p.getNome())
+                .fotoUrl(p.getFotoUrl())
+                .telefone(ocultarSensiveis ? null : p.getTelefone())
+                .email(ocultarSensiveis ? null : p.getEmail())
+                .funcao(p.getFuncao())
+                .diasTrabalho(p.getDiasTrabalho())
+                .horarioInicio(p.getHorarioInicio())
+                .horarioFim(p.getHorarioFim())
+                .percentualComissao(ocultarSensiveis ? null : p.getPercentualComissao())
+                .ativo(p.isAtivo())
+                .build();
+    }
+
+    private Profissional buscarEntidade(Long id) {
         return profissionalRepository.findByIdAndBarbeariaId(id, SecurityUtils.barbeariaAtualId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Profissional não encontrado"));
     }
@@ -58,7 +86,7 @@ public class ProfissionalService {
     }
 
     public Profissional atualizar(Long id, Profissional dados) {
-        Profissional existente = buscar(id);
+        Profissional existente = buscarEntidade(id);
         existente.setNome(dados.getNome());
         existente.setFotoUrl(dados.getFotoUrl());
         existente.setTelefone(dados.getTelefone());
@@ -73,7 +101,7 @@ public class ProfissionalService {
     }
 
     public void excluir(Long id) {
-        profissionalRepository.delete(buscar(id));
+        profissionalRepository.delete(buscarEntidade(id));
     }
 
     /**
@@ -82,7 +110,7 @@ public class ProfissionalService {
      */
     @Transactional
     public void criarAcesso(Long profissionalId, String email, String senha) {
-        Profissional profissional = buscar(profissionalId);
+        Profissional profissional = buscarEntidade(profissionalId);
 
         if (usuarioRepository.existsByEmail(email)) {
             throw new RegraDeNegocioException("Já existe um usuário com este e-mail.");

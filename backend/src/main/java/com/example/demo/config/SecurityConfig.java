@@ -3,6 +3,7 @@ package com.example.demo.config;
 import com.example.demo.security.AssinaturaGateFilter;
 import com.example.demo.security.CustomUserDetailsService;
 import com.example.demo.security.JwtAuthFilter;
+import com.example.demo.security.RateLimitFilter;
 import com.example.demo.security.RecursoGateFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final AssinaturaGateFilter assinaturaGateFilter;
     private final RecursoGateFilter recursoGateFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -84,7 +86,8 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(jwtAuthFilter, RateLimitFilter.class)
             .addFilterAfter(assinaturaGateFilter, JwtAuthFilter.class)
             .addFilterAfter(recursoGateFilter, AssinaturaGateFilter.class);
 

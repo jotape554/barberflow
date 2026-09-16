@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -25,11 +27,14 @@ public class Cliente {
     @JoinColumn(name = "barbearia_id", nullable = false)
     private Barbearia barbearia;
 
+    @NotBlank(message = "Informe o nome do cliente.")
     @Column(nullable = false)
     private String nome;
 
     private String telefone;
     private String whatsapp;
+
+    @Email(message = "Informe um e-mail válido.")
     private String email;
 
     @Column(length = 1000)

@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Servico;
 import com.example.demo.service.ServicoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +29,13 @@ public class ServicoController {
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR','GERENTE')")
     @PostMapping
-    public ResponseEntity<Servico> criar(@RequestBody Servico servico) {
+    public ResponseEntity<Servico> criar(@Valid @RequestBody Servico servico) {
         return ResponseEntity.ok(servicoService.criar(servico));
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR','GERENTE')")
     @PutMapping("/{id}")
-    public Servico atualizar(@PathVariable Long id, @RequestBody Servico servico) {
+    public Servico atualizar(@PathVariable Long id, @Valid @RequestBody Servico servico) {
         return servicoService.atualizar(id, servico);
     }
 
