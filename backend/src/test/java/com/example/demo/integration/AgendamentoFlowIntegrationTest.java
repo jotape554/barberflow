@@ -189,6 +189,6 @@ class AgendamentoFlowIntegrationTest {
                 .andReturn();
 
         JsonNode clientes = objectMapper.readTree(clientesDeB.getResponse().getContentAsString());
-        assertThat(clientes).isEmpty();
+        assertThat(clientes.get("content")).isEmpty();
     }
 }

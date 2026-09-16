@@ -45,7 +45,7 @@ export default function Agenda() {
   function carregarAgendamentos() {
     setCarregando(true);
     api.get(`/api/agendamentos?data=${data}`)
-      .then(setAgendamentos)
+      .then((pagina) => setAgendamentos(pagina.content))
       .catch((e) => setErro(e.message))
       .finally(() => setCarregando(false));
   }
@@ -53,7 +53,7 @@ export default function Agenda() {
   useEffect(carregarAgendamentos, [data]);
 
   useEffect(() => {
-    api.get('/api/clientes').then(setClientes).catch(() => {});
+    api.get('/api/clientes/todos').then(setClientes).catch(() => {});
     api.get('/api/profissionais').then(setProfissionais).catch(() => {});
     api.get('/api/servicos').then(setServicos).catch(() => {});
   }, []);

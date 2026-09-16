@@ -117,7 +117,7 @@ class ProfissionalRestricaoIntegrationTest {
                         .header("Authorization", "Bearer " + tokenCarlos))
                 .andExpect(status().isOk())
                 .andReturn();
-        JsonNode agendamentosDeCarlos = objectMapper.readTree(listaCarlos.getResponse().getContentAsString());
+        JsonNode agendamentosDeCarlos = objectMapper.readTree(listaCarlos.getResponse().getContentAsString()).get("content");
         assertThat(agendamentosDeCarlos).hasSize(1);
         assertThat(agendamentosDeCarlos.get(0).get("id").asLong()).isEqualTo(agendamentoCarlos);
 
@@ -131,7 +131,7 @@ class ProfissionalRestricaoIntegrationTest {
                         .header("Authorization", "Bearer " + tokenAdmin))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertThat(objectMapper.readTree(listaAdmin.getResponse().getContentAsString())).hasSize(2);
+        assertThat(objectMapper.readTree(listaAdmin.getResponse().getContentAsString()).get("content")).hasSize(2);
     }
 
     @Test

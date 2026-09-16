@@ -10,6 +10,8 @@ import com.example.demo.model.*;
 import com.example.demo.repository.*;
 import com.example.demo.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,21 +33,21 @@ public class AgendamentoService {
     private final ReceitaRepository receitaRepository;
     private final ComissaoRepository comissaoRepository;
 
-    public List<Agendamento> listar() {
+    public Page<Agendamento> listar(Pageable pageable) {
         Long barbeariaId = SecurityUtils.barbeariaAtualId();
         if (SecurityUtils.isProfissional()) {
-            return agendamentoRepository.findAllByBarbeariaIdAndProfissionalId(barbeariaId, SecurityUtils.profissionalAtualId());
+            return agendamentoRepository.findAllByBarbeariaIdAndProfissionalId(barbeariaId, SecurityUtils.profissionalAtualId(), pageable);
         }
-        return agendamentoRepository.findAllByBarbeariaId(barbeariaId);
+        return agendamentoRepository.findAllByBarbeariaId(barbeariaId, pageable);
     }
 
-    public List<Agendamento> listarPorData(LocalDate data) {
+    public Page<Agendamento> listarPorData(LocalDate data, Pageable pageable) {
         Long barbeariaId = SecurityUtils.barbeariaAtualId();
         if (SecurityUtils.isProfissional()) {
             return agendamentoRepository.findAllByBarbeariaIdAndProfissionalIdAndData(
-                    barbeariaId, SecurityUtils.profissionalAtualId(), data);
+                    barbeariaId, SecurityUtils.profissionalAtualId(), data, pageable);
         }
-        return agendamentoRepository.findAllByBarbeariaIdAndData(barbeariaId, data);
+        return agendamentoRepository.findAllByBarbeariaIdAndData(barbeariaId, data, pageable);
     }
 
     /** Nunca deixa um profissional enxergar (ou agir sobre) o agendamento de outro profissional. */

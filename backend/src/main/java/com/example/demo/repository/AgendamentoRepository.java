@@ -1,6 +1,8 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Agendamento;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,17 +18,27 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     @Query(FETCH_RELACOES + "where a.barbearia.id = :barbeariaId")
     List<Agendamento> findAllByBarbeariaId(Long barbeariaId);
 
+    @Query(value = FETCH_RELACOES + "where a.barbearia.id = :barbeariaId",
+            countQuery = "select count(a) from Agendamento a where a.barbearia.id = :barbeariaId")
+    Page<Agendamento> findAllByBarbeariaId(Long barbeariaId, Pageable pageable);
+
     @Query(FETCH_RELACOES + "where a.id = :id and a.barbearia.id = :barbeariaId")
     Optional<Agendamento> findByIdAndBarbeariaId(Long id, Long barbeariaId);
 
     @Query(FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.data = :data")
     List<Agendamento> findAllByBarbeariaIdAndData(Long barbeariaId, LocalDate data);
 
-    @Query(FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.profissional.id = :profissionalId")
-    List<Agendamento> findAllByBarbeariaIdAndProfissionalId(Long barbeariaId, Long profissionalId);
+    @Query(value = FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.data = :data",
+            countQuery = "select count(a) from Agendamento a where a.barbearia.id = :barbeariaId and a.data = :data")
+    Page<Agendamento> findAllByBarbeariaIdAndData(Long barbeariaId, LocalDate data, Pageable pageable);
 
-    @Query(FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.profissional.id = :profissionalId and a.data = :data")
-    List<Agendamento> findAllByBarbeariaIdAndProfissionalIdAndData(Long barbeariaId, Long profissionalId, LocalDate data);
+    @Query(value = FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.profissional.id = :profissionalId",
+            countQuery = "select count(a) from Agendamento a where a.barbearia.id = :barbeariaId and a.profissional.id = :profissionalId")
+    Page<Agendamento> findAllByBarbeariaIdAndProfissionalId(Long barbeariaId, Long profissionalId, Pageable pageable);
+
+    @Query(value = FETCH_RELACOES + "where a.barbearia.id = :barbeariaId and a.profissional.id = :profissionalId and a.data = :data",
+            countQuery = "select count(a) from Agendamento a where a.barbearia.id = :barbeariaId and a.profissional.id = :profissionalId and a.data = :data")
+    Page<Agendamento> findAllByBarbeariaIdAndProfissionalIdAndData(Long barbeariaId, Long profissionalId, LocalDate data, Pageable pageable);
 
     /** usado para checar conflito de horário do mesmo profissional no mesmo dia */
     List<Agendamento> findAllByProfissionalIdAndDataAndBarbeariaId(

@@ -7,6 +7,8 @@ const VAZIO = { nome: '', telefone: '', whatsapp: '', email: '', observacoes: ''
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
+  const [pagina, setPagina] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(0);
   const [carregando, setCarregando] = useState(true);
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState(null);
@@ -15,10 +17,15 @@ export default function Clientes() {
 
   function carregar() {
     setCarregando(true);
-    api.get('/api/clientes').then(setClientes).finally(() => setCarregando(false));
+    api.get(`/api/clientes?page=${pagina}&size=20`)
+      .then((resp) => {
+        setClientes(resp.content);
+        setTotalPaginas(resp.totalPages);
+      })
+      .finally(() => setCarregando(false));
   }
 
-  useEffect(carregar, []);
+  useEffect(carregar, [pagina]);
 
   function abrirNovo() {
     setEditando(null);
@@ -58,6 +65,14 @@ export default function Clientes() {
     carregar();
   }
 
+  function paginaAnterior() {
+    setPagina((p) => Math.max(0, p - 1));
+  }
+
+  function proximaPagina() {
+    setPagina((p) => Math.min(totalPaginas - 1, p + 1));
+  }
+
   return (
     <div>
       <div className="page-header">
@@ -94,6 +109,14 @@ export default function Clientes() {
           </table>
         )}
       </div>
+
+      {totalPaginas > 1 && (
+        <div className="paginacao" style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 16, justifyContent: 'flex-end' }}>
+          <button className="btn btn-secundario" onClick={paginaAnterior} disabled={pagina === 0}>Anterior</button>
+          <span>Página {pagina + 1} de {totalPaginas}</span>
+          <button className="btn btn-secundario" onClick={proximaPagina} disabled={pagina >= totalPaginas - 1}>Próximo</button>
+        </div>
+      )}
 
       {modalAberto && (
         <Modal titulo={editando ? 'Editar cliente' : 'Novo cliente'} onFechar={() => setModalAberto(false)}>

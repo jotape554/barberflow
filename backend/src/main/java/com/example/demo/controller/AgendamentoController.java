@@ -6,13 +6,16 @@ import com.example.demo.model.Agendamento;
 import com.example.demo.service.AgendamentoService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/agendamentos")
@@ -22,9 +25,10 @@ public class AgendamentoController {
     private final AgendamentoService agendamentoService;
 
     @GetMapping
-    public List<Agendamento> listar(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
-        return data != null ? agendamentoService.listarPorData(data) : agendamentoService.listar();
+    public Page<Agendamento> listar(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+            @PageableDefault(size = 50, sort = "horaInicio", direction = Sort.Direction.ASC) Pageable pageable) {
+        return data != null ? agendamentoService.listarPorData(data, pageable) : agendamentoService.listar(pageable);
     }
 
     @GetMapping("/{id}")

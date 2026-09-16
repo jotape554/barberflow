@@ -7,6 +7,8 @@ import com.example.demo.repository.BarbeariaRepository;
 import com.example.demo.repository.ClienteRepository;
 import com.example.demo.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +21,13 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final BarbeariaRepository barbeariaRepository;
 
+    /** Lista completa, sem paginação — usada em seletores (ex.: dropdown de cliente na agenda). */
     public List<Cliente> listar() {
         return clienteRepository.findAllByBarbeariaId(SecurityUtils.barbeariaAtualId());
+    }
+
+    public Page<Cliente> listarPaginado(Pageable pageable) {
+        return clienteRepository.findAllByBarbeariaId(SecurityUtils.barbeariaAtualId(), pageable);
     }
 
     public Cliente buscar(Long id) {
