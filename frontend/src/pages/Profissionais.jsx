@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/http';
 import Modal from '../components/Modal';
 import EstadoVazio from '../components/EstadoVazio';
@@ -16,6 +16,7 @@ export default function Profissionais() {
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState(VAZIO);
   const [erro, setErro] = useState('');
+  const modalRef = useRef(null);
 
   const [acessoAberto, setAcessoAberto] = useState(false);
   const [profissionalAcesso, setProfissionalAcesso] = useState(null);
@@ -64,6 +65,7 @@ export default function Profissionais() {
       carregar();
     } catch (err) {
       setErro(err.message);
+      modalRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
@@ -132,7 +134,7 @@ export default function Profissionais() {
       </div>
 
       {modalAberto && (
-        <Modal titulo={editando ? 'Editar profissional' : 'Novo profissional'} onFechar={() => setModalAberto(false)}>
+        <Modal ref={modalRef} titulo={editando ? 'Editar profissional' : 'Novo profissional'} onFechar={() => setModalAberto(false)}>
           {erro && <div className="erro">{erro}</div>}
           <form onSubmit={salvar}>
             <div className="campo">
