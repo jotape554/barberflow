@@ -15,6 +15,7 @@ import Servicos from './pages/Servicos';
 import Profissionais from './pages/Profissionais';
 import Agenda from './pages/Agenda';
 import Financeiro from './pages/Financeiro';
+import AssistenteIa from './pages/AssistenteIa';
 import Assinatura from './pages/Assinatura';
 import AgendamentoPublico from './pages/public/AgendamentoPublico';
 import Institucional from './pages/Institucional';
@@ -111,6 +112,7 @@ export default function App() {
             <Route path="servicos" element={<Servicos />} />
             <Route path="profissionais" element={<Profissionais />} />
             <Route path="financeiro" element={<Financeiro />} />
+            <Route path="assistente" element={<AssistenteIa />} />
             <Route path="assinatura" element={<Assinatura />} />
           </Route>
 

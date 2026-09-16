@@ -38,7 +38,8 @@ public class RecursoGateFilter extends OncePerRequestFilter {
             "/api/dashboard", Recurso.DASHBOARD,
             "/api/receitas", Recurso.FINANCEIRO,
             "/api/despesas", Recurso.FINANCEIRO,
-            "/api/comissoes", Recurso.COMISSOES
+            "/api/comissoes", Recurso.COMISSOES,
+            "/api/assistente", Recurso.ASSISTENTE_IA
     );
 
     private final BarbeariaRepository barbeariaRepository;
